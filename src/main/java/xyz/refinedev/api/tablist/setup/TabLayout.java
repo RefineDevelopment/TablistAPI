@@ -19,6 +19,7 @@ import lombok.extern.log4j.Log4j2;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import xyz.refinedev.api.tablist.TablistHandler;
@@ -182,7 +183,7 @@ public class TabLayout {
      * @param ping  {@link Integer Latency}
      * @param skin  {@link Skin Entry Skin}
      */
-    public void update(int index, int x, int y, String text, int ping, Skin skin) {
+    public void update(int index, String text, int ping, Skin skin) {
         if (PacketUtils.isLegacyClient(player) && index >= 60) {
             return;
         }
@@ -212,20 +213,19 @@ public class TabLayout {
 
         // 1.7 and below support
         if (PacketUtils.isLegacyClient(player)) {
-            Team bukkitTeam = player.getScoreboard().getTeam(team);
+            Scoreboard scoreboard = player.getScoreboard();
+            Team bukkitTeam = scoreboard.getTeam(team);
             boolean teamExists = bukkitTeam != null;
 
             // This is a new entry, make it's team
             if (bukkitTeam == null) {
-                bukkitTeam = player.getScoreboard().registerNewTeam(team);
+                bukkitTeam = scoreboard.registerNewTeam(team);
                 bukkitTeam.addEntry(displayName);
             }
 
             if (changed || !teamExists) {
                 bukkitTeam.setPrefix(prefix);
-                if (!suffix.isEmpty()) {
-                    bukkitTeam.setSuffix(suffix);
-                }
+                bukkitTeam.setSuffix(suffix);
             }
             this.updatePing(entry, ping);
 

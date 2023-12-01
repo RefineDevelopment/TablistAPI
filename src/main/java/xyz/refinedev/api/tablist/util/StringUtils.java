@@ -30,6 +30,8 @@ public class StringUtils {
 
 
     // Thnx scifi, love you <3
+
+    //TODO: Last colors in scoreboard team suffix not working properly
     public String[] split(String text) {
         if (text.length() <= 16) {
             return new String[] { text, "" };
@@ -45,7 +47,7 @@ public class StringUtils {
             prefix = prefix.substring(0, 14);
             suffix = text.substring(14);
         } else {
-            suffix = StringUtils.getLastColors(StringUtils.color(prefix)) + text.substring(16);
+            suffix = StringUtils.getLastColors(prefix) + text.substring(16);
         }
 
         return new String[] { prefix, suffix };

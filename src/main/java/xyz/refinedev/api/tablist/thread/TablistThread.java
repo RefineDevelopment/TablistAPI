@@ -47,7 +47,7 @@ public class TablistThread extends BukkitRunnable {
                 final int i = y * layout.getMod() + x;
 
                 try {
-                    layout.update(i, x, y, entry.getText(), entry.getPing(), entry.getSkin());
+                    layout.update(i, entry.getText(), entry.getPing(), entry.getSkin());
                 } catch (NullPointerException e) {
                     if (handler.getPlugin().getName().equals("Bolt") && !handler.isDebug()) {
                         continue;

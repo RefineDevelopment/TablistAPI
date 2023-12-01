@@ -6,7 +6,10 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Team;
 
 import xyz.refinedev.api.tablist.adapter.TabAdapter;
 import xyz.refinedev.api.tablist.adapter.impl.ExampleAdapter;
@@ -16,6 +19,7 @@ import xyz.refinedev.api.tablist.listener.TeamsPacketListener;
 import xyz.refinedev.api.tablist.setup.TabLayout;
 import xyz.refinedev.api.tablist.skin.SkinCache;
 import xyz.refinedev.api.tablist.thread.TablistThread;
+import xyz.refinedev.api.tablist.util.PacketUtils;
 
 import java.util.Map;
 import java.util.UUID;
@@ -46,6 +50,10 @@ public class TablistHandler {
      */
     private TabAdapter adapter;
     /**
+     * Main tablist listener
+     */
+    private TabListener listener;
+    /**
      * This thread handles all the operations surrounding
      * ticking and updating the NameTags
      */
@@ -66,9 +74,10 @@ public class TablistHandler {
     public void init(PacketEventsAPI<?> packetEventsAPI, TeamsPacketListener listener) {
         this.packetEvents = packetEventsAPI;
         this.adapter = new ExampleAdapter();
+        this.listener = new TabListener(this);
 
         this.packetEvents.getEventManager().registerListener(listener);
-        Bukkit.getPluginManager().registerEvents(new TabListener(this), plugin);
+        Bukkit.getPluginManager().registerEvents(this.listener, plugin);
 
         this.setupSkinCache();
     }
@@ -95,6 +104,40 @@ public class TablistHandler {
     }
 
     public void unload() {
+        if (this.listener != null) {
+            HandlerList.unregisterAll(this.listener);
+            this.listener = null;
+        }
+
+        // Destroy player scoreboards.
+        for ( Map.Entry<UUID, TabLayout> entry : this.layoutMapping.entrySet()) {
+            UUID uuid = entry.getKey();
+
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null || !player.isOnline()) {
+                continue;
+            }
+
+            // Destroy 1.7 teams
+            if (PacketUtils.isLegacyClient(player)) {
+                for ( int i = 0; i < 60; i++ ) {
+                    Team team = player.getScoreboard().getTeam("$" + TabLayout.TAB_NAMES[i]);
+                    if (team != null) {
+                        team.unregister();
+                    }
+                }
+            }
+
+            // Destroy main tablist team
+            Team team = player.getScoreboard().getTeam("tab");
+            if (team != null) {
+                team.unregister();
+            }
+
+            this.layoutMapping.remove(uuid);
+        }
+
         this.thread.cancel();
+        this.thread = null;
     }
 }
