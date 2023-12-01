@@ -38,7 +38,9 @@ Add this to your `pom.xml` `<dependencies>`:
 ```
 
 ## Usage
-It requires PacketEvents to be shaded in the plugin you are using this with.
+It requires PacketEvents to be shaded in the plugin you are using this with. Please relocate Packet Events
+according to their guide in their [wiki guide](https://github.com/retrooper/packetevents/wiki/Shading-PacketEvents)
+
 I recommend registering tablist after any other scoreboard related API is registered because
 those APIs sometimes assign or override the player's scoreboard, which would be problematic here.
 
