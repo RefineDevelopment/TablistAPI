@@ -121,8 +121,8 @@ public class TablistAdapter implements TabAdapter {
 ```
 
 ## Support
-I don't plan on working on the API much, so don't expect support for bugs. 
-If you need help with implementation, feel free to ask in my discord.
+We don't plan on working on the API much, so don't expect support for bugs. 
+If you need help with implementation, feel free to ask in our [discord](https://discord.com/invite/Q39GNJtHz2).
 
 ## Disclaimer
 Feel free to use this API in any project, just give credits. You are not allowed to sell or
