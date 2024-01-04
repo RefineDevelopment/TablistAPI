@@ -59,8 +59,8 @@ public class TabLayout {
     private boolean isFirstJoin = true;
 
     public TabLayout(Player player) {
-        this.mod = PacketUtils.isLegacyClient(player) ? 3 : 4;
-        this.maxEntries = PacketUtils.isLegacyClient(player) ? 60 : 80;
+        this.mod = PacketUtils.isLegacyClient(player) ? 3 : 3;
+        this.maxEntries = PacketUtils.isLegacyClient(player) ? 60 : 60;
         this.player = player;
     }
 
