@@ -21,7 +21,7 @@ OR
 <repositories>
     <repository>
         <id>refine-public</id>
-        <url>https://maven.refinedev.xyz/repository/refine-public/</url>
+        <url>https://maven.refinedev.xyz/repository/public-repo/</url>
     </repository>
 </repositories>
 ```
