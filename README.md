@@ -6,6 +6,7 @@ Refine's TablistAPI | Custom
 - Supports all spigot and client versions (1.7x to 1.20x).
 - Lightweight with no performance overhead.
 - Supports hex colors on supported versions.
+- Periodically updating footer/header.
 - 1.7 clients have a 32 char limit whilst 1.8+ clients have a 48 char limit.
 - Easy to use.
 
@@ -72,7 +73,7 @@ import xyz.refinedev.api.tablist.adapter.TabAdapter;
 
 public class TablistAdapter implements TabAdapter {
 
-	/**
+    /**
      * Get the tab header for a player.
      *
      * @param player the player
