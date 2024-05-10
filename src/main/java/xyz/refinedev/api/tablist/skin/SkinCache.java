@@ -1,5 +1,7 @@
 package xyz.refinedev.api.tablist.skin;
 
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -44,7 +46,19 @@ public class SkinCache {
      * @param player {@link Player}
      */
     public void registerCache(Player player) {
-        CompletableFuture<CachedSkin> skinFuture = CompletableFuture.supplyAsync(() -> this.fetchSkin(player, false));
+        CompletableFuture<CachedSkin> skinFuture = CompletableFuture.supplyAsync(() -> {
+            try {
+                WrappedGameProfile wrappedGameProfile = WrappedGameProfile.fromPlayer(player);
+                WrappedSignedProperty prop = wrappedGameProfile.getProperties().get("textures").iterator().next();
+                String value = prop.getValue();
+                String signature = prop.getSignature();
+
+                return new CachedSkin(player.getName(), value, signature);
+            } catch (Exception e) {
+                return this.fetchSkin(player, false);
+            }
+        });
+
         skinFuture.whenComplete((skin, action) -> {
             if (skin != null) {
                 this.skinCache.put(player.getName(), skin);

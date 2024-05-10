@@ -13,7 +13,7 @@ public class TabEntry {
 
     private final int x, y;
     private String text;
-    private int ping = TabLatency.FIVE_BARS.getValue();
+    private int ping = 0;
     private Skin skin = Skin.DEFAULT_SKIN;
 
     public TabEntry(int x, int y, String text) {

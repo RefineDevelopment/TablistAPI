@@ -57,11 +57,25 @@ public class TabLayout {
      * up with white text "null" until next update is triggered.
      */
     private boolean isFirstJoin = true;
+    /**
+     * The {@link Scoreboard} associated with this {@link TabLayout}
+     */
+    @Getter private final Scoreboard scoreboard;
+
+    private String header, footer;
 
     public TabLayout(Player player) {
-        this.mod = PacketUtils.isLegacyClient(player) ? 3 : 4;
+        this.mod = /*PacketUtils.isLegacyClient(player) ? 3 :*/ 4;
         this.maxEntries = PacketUtils.isLegacyClient(player) ? 60 : 80;
         this.player = player;
+
+        if (TablistHandler.getInstance().isHook() || !(player.getScoreboard() == Bukkit.getScoreboardManager().getMainScoreboard())) {
+            this.scoreboard = player.getScoreboard();
+        } else {
+            this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        }
+
+        player.setScoreboard(this.scoreboard);
     }
 
     /**
@@ -73,8 +87,10 @@ public class TabLayout {
 
         if (manager.getVersion().isNewerThanOrEquals(ServerVersion.V_1_19_3)) {
             List<WrapperPlayServerPlayerInfoUpdate.PlayerInfo> dataList = new ArrayList<>();
-            for ( int index = 0; index < maxEntries; index++ ) {
+            for ( int index = 0; index < 80; index++ ) {
                 int x = index % mod;
+                if (x >= 3 && PacketUtils.isLegacyClient(player)) continue;
+
                 int y = index / mod;
                 int i = y * mod + x;
 
@@ -105,8 +121,10 @@ public class TabLayout {
             WrapperPlayServerPlayerInfo packetInfo = new WrapperPlayServerPlayerInfo(WrapperPlayServerPlayerInfo.Action.ADD_PLAYER);
             List<WrapperPlayServerPlayerInfo.PlayerData> dataList = packetInfo.getPlayerDataList();
 
-            for ( int index = 0; index < maxEntries; index++ ) {
+            for ( int index = 0; index < 80; index++ ) {
                 int x = index % mod;
+                if (x >= 3 && PacketUtils.isLegacyClient(player)) continue;
+
                 int y = index / mod;
                 int i = y * mod + x;
 
@@ -125,32 +143,92 @@ public class TabLayout {
             this.sendPacket(packetInfo);
         }
 
-        // Add everyone to the "Tab" team
-        // These aren't really used for 1.17+ except for hiding our own name
-        Team bukkitTeam = player.getScoreboard().getTeam("tab");
-        if (bukkitTeam == null) {
-            bukkitTeam = player.getScoreboard().registerNewTeam("tab");
-        }
-
-        Bukkit.getOnlinePlayers().stream().filter(Objects::nonNull).map(Player::getName).forEach(bukkitTeam::addEntry);
-
         // Add them to their own team so that our own name doesn't show up
-        for ( int index = 0; index < maxEntries; index++ ) {
-            String displayName = getTeamAt(index);
+        for ( int index = 0; index < 80; index++ ) {
+            int x = index % mod;
+            if (x >= 3 && PacketUtils.isLegacyClient(player)) continue;
+
+            int y = index / mod;
+            int i = y * mod + x;
+
+            String displayName = getTeamAt(i);
             String team = "$" + displayName;
 
-            Team scoreboardTeam = player.getScoreboard().getTeam(team);
+            Team scoreboardTeam = scoreboard.getTeam(team);
             if (scoreboardTeam == null) {
-                scoreboardTeam = player.getScoreboard().registerNewTeam(team);
+                scoreboardTeam = scoreboard.registerNewTeam(team);
                 scoreboardTeam.addEntry(displayName);
             }
         }
+    }
 
-        for ( Player target : Bukkit.getOnlinePlayers() ) {
-            Team team = target.getScoreboard().getTeam("tab");
-            if (team == null) continue;
+    public void refresh() {
+        TablistHandler tablistHandler = TablistHandler.getInstance();
+        List<TabEntry> entries = tablistHandler.getAdapter().getLines(player);
+        if (entries.isEmpty()) {
+            for ( int i = 0; i < 80; i++ ) {
+                this.update(i, "", 0, Skin.DEFAULT_SKIN);
+            }
+            return;
+        }
 
-            team.addEntry(player.getName());
+        for ( int i = 0; i < 80; i++ ) {
+            TabEntry entry = i < entries.size() ? entries.get(i) : null;
+            if (entry == null) {
+                this.update(i, "", 0, Skin.DEFAULT_SKIN);
+                continue;
+            }
+
+            final int x = entry.getX();
+            final int y = entry.getY();
+
+            if (x >= 3 && PacketUtils.isLegacyClient(player)) continue;
+
+            final int index = y * mod + x;
+
+            try {
+                this.update(index, entry.getText(), entry.getPing(), entry.getSkin());
+            } catch (NullPointerException e) {
+                if (tablistHandler.getPlugin().getName().equals("Bolt") && !tablistHandler.isDebug()) {
+                    continue;
+                }
+                log.fatal("[{}] There was an error updating tablist for {}", tablistHandler.getPlugin().getName(), player.getName());
+                log.error(e);
+                e.printStackTrace();
+            } catch (Exception e) {
+                log.fatal("[{}] There was an error updating tablist for {}", tablistHandler.getPlugin().getName(), player.getName());
+                log.error(e);
+                e.printStackTrace();
+            }
+        }
+
+        this.setHeaderAndFooter();
+
+        if (player.getScoreboard() != scoreboard && !tablistHandler.isHook()) {
+            player.setScoreboard(scoreboard);
+        }
+    }
+
+    public void cleanup() {
+        for ( int index = 0; index < 80; index++ ) {
+            String displayName = getTeamAt(index);
+            String team = "$" + displayName;
+
+            Team bukkitTeam = player.getScoreboard().getTeam(team);
+            if (bukkitTeam != null) {
+                bukkitTeam.unregister();
+            }
+
+            TabEntryInfo entry = this.entryMapping.get(index);
+            if (entry == null) continue;
+
+            UserProfile userProfile = entry.getProfile();
+            PacketWrapper<?> playerInfoRemove = new WrapperPlayServerPlayerInfoRemove(userProfile.getUUID());
+            this.sendPacket(playerInfoRemove);
+        }
+
+        if (!TablistHandler.getInstance().isHook()) {
+            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
     }
 
@@ -166,6 +244,13 @@ public class TabLayout {
 
         String header = StringUtils.color(tablistAdapter.getHeader(player));
         String footer = StringUtils.color(tablistAdapter.getFooter(player));
+
+        if (header.equals(this.header) && footer.equals(this.footer)) {
+            return;
+        }
+
+        this.header = header;
+        this.footer = footer;
 
         WrapperPlayServerPlayerListHeaderAndFooter headerAndFooter = new WrapperPlayServerPlayerListHeaderAndFooter(
                 AdventureSerializer.fromLegacyFormat(header),
@@ -184,18 +269,26 @@ public class TabLayout {
      * @param skin  {@link Skin Entry Skin}
      */
     public void update(int index, String text, int ping, Skin skin) {
-        if (PacketUtils.isLegacyClient(player) && index >= 60) {
-            return;
-        }
-
-        String[] splitString = StringUtils.split(text);
         text = StringUtils.color(text);
+        String[] splitString = StringUtils.split(text);
 
-        String prefix = StringUtils.color(splitString[0]);
-        String suffix = StringUtils.color(splitString[1]);
+        String prefix = splitString[0];
+        String suffix = splitString[1];
 
         String displayName = getTeamAt(index);
         String team = "$" + displayName;
+
+        if (team.length() > 16 || displayName.length() > 16) {
+            if (TablistHandler.getInstance().isDebug()) {
+                log.info("[TablistAPI] Team Name or Display Name is longer than 16");
+            }
+         }
+
+        if (prefix.length() > 16 || suffix.length() > 16) {
+            if (TablistHandler.getInstance().isDebug()) {
+                log.info("[TablistAPI] Prefix or Suffix is longer than 16");
+            }
+        }
 
         TabEntryInfo entry = this.entryMapping.get(index);
         if (entry == null) return;
@@ -225,7 +318,7 @@ public class TabLayout {
 
             if (changed || !teamExists) {
                 bukkitTeam.setPrefix(prefix);
-                bukkitTeam.setSuffix(suffix);
+                bukkitTeam.setSuffix(suffix.length() > 0 ? suffix : "");
             }
             this.updatePing(entry, ping);
 

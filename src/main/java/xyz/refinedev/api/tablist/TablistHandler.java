@@ -3,6 +3,7 @@ package xyz.refinedev.api.tablist;
 import com.github.retrooper.packetevents.PacketEventsAPI;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import org.bukkit.Bukkit;
@@ -19,7 +20,6 @@ import xyz.refinedev.api.tablist.listener.TeamsPacketListener;
 import xyz.refinedev.api.tablist.setup.TabLayout;
 import xyz.refinedev.api.tablist.skin.SkinCache;
 import xyz.refinedev.api.tablist.thread.TablistThread;
-import xyz.refinedev.api.tablist.util.PacketUtils;
 
 import java.util.Map;
 import java.util.UUID;
@@ -59,7 +59,10 @@ public class TablistHandler {
      */
     private TablistThread thread;
     private PacketEventsAPI<?> packetEvents;
+    private TeamsPacketListener teamsPacketListener;
     private final boolean debug;
+    @Setter private boolean hook, ignore1_7;
+    private long ticks = 20L;
 
     public TablistHandler(JavaPlugin plugin) {
         instance = this;
@@ -76,6 +79,7 @@ public class TablistHandler {
         this.adapter = new ExampleAdapter();
         this.listener = new TabListener(this);
 
+        this.teamsPacketListener = listener;
         this.packetEvents.getEventManager().registerListener(listener);
         Bukkit.getPluginManager().registerEvents(this.listener, plugin);
 
@@ -92,7 +96,9 @@ public class TablistHandler {
 
         if (ticks < 20L) {
             log.info("[{}] Provided refresh tick rate for Tablist is too low, reverting to 20 ticks!", plugin.getName());
-            ticks = 20L;
+            this.ticks = 20L;
+        } else {
+            this.ticks = ticks;
         }
 
         if (Bukkit.getMaxPlayers() < 60) {
@@ -100,7 +106,7 @@ public class TablistHandler {
         }
 
         this.thread = new TablistThread(this);
-        this.thread.runTaskTimerAsynchronously(plugin, 0L, ticks);
+        this.thread.start();
     }
 
     public void unload() {
@@ -112,20 +118,11 @@ public class TablistHandler {
         // Destroy player scoreboards.
         for ( Map.Entry<UUID, TabLayout> entry : this.layoutMapping.entrySet()) {
             UUID uuid = entry.getKey();
+            entry.getValue().cleanup();
 
             Player player = Bukkit.getPlayer(uuid);
             if (player == null || !player.isOnline()) {
                 continue;
-            }
-
-            // Destroy 1.7 teams
-            if (PacketUtils.isLegacyClient(player)) {
-                for ( int i = 0; i < 60; i++ ) {
-                    Team team = player.getScoreboard().getTeam("$" + TabLayout.TAB_NAMES[i]);
-                    if (team != null) {
-                        team.unregister();
-                    }
-                }
             }
 
             // Destroy main tablist team
@@ -137,7 +134,8 @@ public class TablistHandler {
             this.layoutMapping.remove(uuid);
         }
 
-        this.thread.cancel();
+        this.thread.terminate();
+        this.thread.interrupt();
         this.thread = null;
     }
 }

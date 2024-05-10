@@ -2,6 +2,7 @@ package xyz.refinedev.api.tablist.util;
 
 import lombok.experimental.UtilityClass;
 import lombok.val;
+import lombok.var;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -47,7 +48,12 @@ public class StringUtils {
             prefix = prefix.substring(0, 14);
             suffix = text.substring(14);
         } else {
-            suffix = StringUtils.getLastColors(prefix) + text.substring(16);
+            var lastColor = ChatColor.getLastColors(prefix);
+            suffix = lastColor + text.substring(16);
+        }
+
+        if (suffix.length() > 16) {
+            suffix = suffix.substring(0, 16);
         }
 
         return new String[] { prefix, suffix };
