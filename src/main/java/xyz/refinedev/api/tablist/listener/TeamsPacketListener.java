@@ -66,14 +66,14 @@ public class TeamsPacketListener extends PacketListenerAbstract {
             WrapperPlayServerTeams teams = new WrapperPlayServerTeams(event);
             if (teams.getTeamMode() != WrapperPlayServerTeams.TeamMode.REMOVE_ENTITIES) return;
 
-            if (!teams.getTeamName().equals("tab")) {
+            if (!teams.getTeamName().equals("ztab")) {
                 teams.setTeamMode(WrapperPlayServerTeams.TeamMode.ADD_ENTITIES);
                 teams.setTeamName("tab");
 
                 Optional<WrapperPlayServerTeams.ScoreBoardTeamInfo> teamInfo = teams.getTeamInfo();
                 if (teamInfo.isPresent()) {
                     WrapperPlayServerTeams.ScoreBoardTeamInfo info = teamInfo.get();
-                    info.setDisplayName(Component.text("tab"));
+                    info.setDisplayName(Component.text("ztab"));
                 }
             }
         } else */if (isClientNew && event.getPacketType() == PacketType.Play.Server.PLAYER_INFO_UPDATE) {
@@ -118,10 +118,10 @@ public class TeamsPacketListener extends PacketListenerAbstract {
         }
 
         Scoreboard scoreboard = player.getScoreboard();
-        Team team = scoreboard.getTeam("tab");
+        Team team = scoreboard.getTeam("ztab");
 
         if (team == null) {
-            team = scoreboard.registerNewTeam("tab");
+            team = scoreboard.registerNewTeam("ztab");
         }
 
         if (!team.hasEntry(online.getName())) {

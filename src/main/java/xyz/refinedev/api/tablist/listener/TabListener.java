@@ -19,7 +19,7 @@ public class TabListener implements Listener {
     private final TablistHandler instance;
 
 
-    @EventHandler(priority =  EventPriority.LOW)
+    @EventHandler(priority =  EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
@@ -37,7 +37,7 @@ public class TabListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        Team team = player.getScoreboard().getTeam("tab");
+        Team team = player.getScoreboard().getTeam("ztab");
         if (team != null) {
             team.removeEntry(player.getName());
             team.unregister();

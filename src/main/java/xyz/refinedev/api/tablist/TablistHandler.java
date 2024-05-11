@@ -126,7 +126,7 @@ public class TablistHandler {
             }
 
             // Destroy main tablist team
-            Team team = player.getScoreboard().getTeam("tab");
+            Team team = player.getScoreboard().getTeam("ztab");
             if (team != null) {
                 team.unregister();
             }

@@ -143,6 +143,20 @@ public class TabLayout {
             this.sendPacket(packetInfo);
         }
 
+        // Add everyone to the "Tab" team
+        // These aren't really used for 1.17+ except for hiding our own name
+        Team bukkitTeam = scoreboard.getTeam("ztab");
+        if (bukkitTeam == null) {
+            bukkitTeam = scoreboard.registerNewTeam("ztab");
+        }
+
+        for (Player target : Bukkit.getOnlinePlayers()) {
+            if (target == null) continue;
+            if (bukkitTeam.hasEntry(target.getName())) continue;
+
+            bukkitTeam.addEntry(target.getName());
+        }
+
         // Add them to their own team so that our own name doesn't show up
         for ( int index = 0; index < 80; index++ ) {
             int x = index % mod;
@@ -159,6 +173,15 @@ public class TabLayout {
                 scoreboardTeam = scoreboard.registerNewTeam(team);
                 scoreboardTeam.addEntry(displayName);
             }
+        }
+
+
+        for ( Player target : Bukkit.getOnlinePlayers() ) {
+            Team team = target.getScoreboard().getTeam("ztab");
+            if (team == null) continue;
+            if (team.hasEntry(player.getName())) continue;
+
+            team.addEntry(player.getName());
         }
     }
 
