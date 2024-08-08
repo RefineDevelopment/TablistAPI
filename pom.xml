@@ -53,9 +53,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.retrooper.packetevents</groupId>
-            <artifactId>spigot</artifactId>
-            <version>2.3.0</version>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-spigot</artifactId>
+            <version>2.4.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
+            <version>1.18.30</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
@@ -120,7 +120,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.20</version>
+                            <version>1.18.30</version>
                         </path>
                     </annotationProcessorPaths>
                     <target>${maven.compiler.target}</target>

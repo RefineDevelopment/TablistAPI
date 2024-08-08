@@ -25,9 +25,18 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class StringUtils {
 
-    public static final String VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-    public static final int MINOR_VERSION = Integer.parseInt(VERSION.split("_")[1]);
+    public static final int MINOR_VERSION;
     private static final Pattern hexPattern = Pattern.compile("&#[A-Fa-f0-9]{6}");
+
+    static {
+        Matcher matcher = Pattern.compile("MC: \\d\\.(\\d+)").matcher(Bukkit.getVersion());
+
+        if (matcher.find()) {
+            MINOR_VERSION = Integer.parseInt(matcher.group(1));
+        }else {
+            MINOR_VERSION = 8;
+        }
+    }
 
 
     // Thnx scifi, love you <3
