@@ -7,7 +7,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import xyz.refinedev.api.tablist.TablistHandler;
-import xyz.refinedev.api.tablist.setup.TabLayout;
 import xyz.refinedev.api.tablist.skin.SkinCache;
 
 /**

@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 /**
  * This Project is property of Refine Development © 2021 - 2023
  * Redistribution of this Project is not allowed

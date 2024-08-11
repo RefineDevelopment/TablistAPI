@@ -3,11 +3,8 @@ package xyz.refinedev.api.tablist;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.PacketEventsAPI;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
-
 import lombok.Getter;
-
 import org.bukkit.plugin.java.JavaPlugin;
-
 import xyz.refinedev.api.tablist.adapter.impl.ExampleAdapter;
 import xyz.refinedev.api.tablist.listener.TeamsPacketListener;
 
@@ -22,7 +19,7 @@ import xyz.refinedev.api.tablist.listener.TeamsPacketListener;
 @Getter
 public class TablistPlugin extends JavaPlugin {
 
-    private TablistHandler tablistHandler;
+    private xyz.refinedev.api.tablist.TablistHandler tablistHandler;
     private PacketEventsAPI<?> packetEventsAPI;
 
     @Override

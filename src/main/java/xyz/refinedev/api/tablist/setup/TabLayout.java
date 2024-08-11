@@ -9,19 +9,18 @@ import com.github.retrooper.packetevents.protocol.player.TextureProperty;
 import com.github.retrooper.packetevents.protocol.player.UserProfile;
 import com.github.retrooper.packetevents.util.adventure.AdventureSerializer;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
-import com.github.retrooper.packetevents.wrapper.play.server.*;
-
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfo;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoRemove;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerListHeaderAndFooter;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-
 import xyz.refinedev.api.tablist.TablistHandler;
 import xyz.refinedev.api.tablist.adapter.TabAdapter;
 import xyz.refinedev.api.tablist.util.PacketUtils;
@@ -39,7 +38,7 @@ public class TabLayout {
 
     /**
      * {@link Integer Mod} is the modification integer
-     * used to determine rows/columns from index of the {@link TabEntry}.
+     * used to determine rows/columns from index of the {@link xyz.refinedev.api.tablist.setup.TabEntry}.
      */
     @Getter private final int mod;
     /**
@@ -145,9 +144,9 @@ public class TabLayout {
 
         // Add everyone to the "Tab" team
         // These aren't really used for 1.17+ except for hiding our own name
-        Team bukkitTeam = scoreboard.getTeam("ztab");
+        Team bukkitTeam = scoreboard.getTeam("rtab");
         if (bukkitTeam == null) {
-            bukkitTeam = scoreboard.registerNewTeam("ztab");
+            bukkitTeam = scoreboard.registerNewTeam("rtab");
         }
 
         for (Player target : Bukkit.getOnlinePlayers()) {
@@ -177,7 +176,7 @@ public class TabLayout {
 
 
         for ( Player target : Bukkit.getOnlinePlayers() ) {
-            Team team = target.getScoreboard().getTeam("ztab");
+            Team team = target.getScoreboard().getTeam("rtab");
             if (team == null) continue;
             if (team.hasEntry(player.getName())) continue;
 
@@ -187,42 +186,46 @@ public class TabLayout {
 
     public void refresh() {
         TablistHandler tablistHandler = TablistHandler.getInstance();
-        List<TabEntry> entries = tablistHandler.getAdapter().getLines(player);
-        if (entries.isEmpty()) {
+        try {
+            List<xyz.refinedev.api.tablist.setup.TabEntry> entries = tablistHandler.getAdapter().getLines(player);
+            if (entries.isEmpty()) {
+                for ( int i = 0; i < 80; i++ ) {
+                    this.update(i, "", 0, Skin.DEFAULT_SKIN);
+                }
+                return;
+            }
+
             for ( int i = 0; i < 80; i++ ) {
-                this.update(i, "", 0, Skin.DEFAULT_SKIN);
-            }
-            return;
-        }
-
-        for ( int i = 0; i < 80; i++ ) {
-            TabEntry entry = i < entries.size() ? entries.get(i) : null;
-            if (entry == null) {
-                this.update(i, "", 0, Skin.DEFAULT_SKIN);
-                continue;
-            }
-
-            final int x = entry.getX();
-            final int y = entry.getY();
-
-            if (x >= 3 && PacketUtils.isLegacyClient(player)) continue;
-
-            final int index = y * mod + x;
-
-            try {
-                this.update(index, entry.getText(), entry.getPing(), entry.getSkin());
-            } catch (NullPointerException e) {
-                if (tablistHandler.getPlugin().getName().equals("Bolt") && !tablistHandler.isDebug()) {
+                xyz.refinedev.api.tablist.setup.TabEntry entry = i < entries.size() ? entries.get(i) : null;
+                if (entry == null) {
+                    this.update(i, "", 0, Skin.DEFAULT_SKIN);
                     continue;
                 }
-                log.fatal("[{}] There was an error updating tablist for {}", tablistHandler.getPlugin().getName(), player.getName());
-                log.error(e);
-                e.printStackTrace();
-            } catch (Exception e) {
+
+                final int x = entry.getX();
+                final int y = entry.getY();
+
+                if (x >= 3 && PacketUtils.isLegacyClient(player)) continue;
+
+                final int index = y * mod + x;
+                try {
+                    this.update(index, entry.getText(), entry.getPing(), entry.getSkin());
+                } catch (Exception e) {
+                    log.fatal("[{}] There was an error updating tablist for {}", tablistHandler.getPlugin().getName(), player.getName());
+                    log.error(e);
+                    e.printStackTrace();
+                }
+            }
+        } catch (NullPointerException e) {
+            if (!tablistHandler.getPlugin().getName().equals("Bolt") || tablistHandler.isDebug()) {
                 log.fatal("[{}] There was an error updating tablist for {}", tablistHandler.getPlugin().getName(), player.getName());
                 log.error(e);
                 e.printStackTrace();
             }
+        } catch (Exception e) {
+            log.fatal("[{}] There was an error updating tablist for {}", tablistHandler.getPlugin().getName(), player.getName());
+            log.error(e);
+            e.printStackTrace();
         }
 
         this.setHeaderAndFooter();
@@ -363,7 +366,7 @@ public class TabLayout {
     }
 
     /**
-     * Update the {@link TabEntry}'s ping
+     * Update the {@link xyz.refinedev.api.tablist.setup.TabEntry}'s ping
      *
      * @param info {@link TabEntryInfo info}
      * @param ping {@link Integer ping}

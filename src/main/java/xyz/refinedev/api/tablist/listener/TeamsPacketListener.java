@@ -9,22 +9,16 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.UserProfile;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfo;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate;
-
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams;
 import lombok.RequiredArgsConstructor;
-
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-
 import xyz.refinedev.api.tablist.TablistHandler;
 import xyz.refinedev.api.tablist.util.GlitchFixEvent;
 import xyz.refinedev.api.tablist.util.PacketUtils;
 
 import java.util.EnumSet;
-import java.util.Optional;
 
 /**
  * <p>
@@ -66,14 +60,14 @@ public class TeamsPacketListener extends PacketListenerAbstract {
             WrapperPlayServerTeams teams = new WrapperPlayServerTeams(event);
             if (teams.getTeamMode() != WrapperPlayServerTeams.TeamMode.REMOVE_ENTITIES) return;
 
-            if (!teams.getTeamName().equals("ztab")) {
+            if (!teams.getTeamName().equals("rtab")) {
                 teams.setTeamMode(WrapperPlayServerTeams.TeamMode.ADD_ENTITIES);
                 teams.setTeamName("tab");
 
                 Optional<WrapperPlayServerTeams.ScoreBoardTeamInfo> teamInfo = teams.getTeamInfo();
                 if (teamInfo.isPresent()) {
                     WrapperPlayServerTeams.ScoreBoardTeamInfo info = teamInfo.get();
-                    info.setDisplayName(Component.text("ztab"));
+                    info.setDisplayName(Component.text("rtab"));
                 }
             }
         } else */if (isClientNew && event.getPacketType() == PacketType.Play.Server.PLAYER_INFO_UPDATE) {
@@ -118,10 +112,10 @@ public class TeamsPacketListener extends PacketListenerAbstract {
         }
 
         Scoreboard scoreboard = player.getScoreboard();
-        Team team = scoreboard.getTeam("ztab");
+        Team team = scoreboard.getTeam("rtab");
 
         if (team == null) {
-            team = scoreboard.registerNewTeam("ztab");
+            team = scoreboard.registerNewTeam("rtab");
         }
 
         if (!team.hasEntry(online.getName())) {

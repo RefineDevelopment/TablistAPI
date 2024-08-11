@@ -2,11 +2,9 @@ package xyz.refinedev.api.tablist.setup;
 
 import com.github.retrooper.packetevents.protocol.player.UserProfile;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
 import xyz.refinedev.api.tablist.util.Skin;
 
 /**

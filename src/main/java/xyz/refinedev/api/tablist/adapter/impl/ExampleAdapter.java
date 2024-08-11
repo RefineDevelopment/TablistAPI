@@ -1,10 +1,7 @@
 package xyz.refinedev.api.tablist.adapter.impl;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-
 import xyz.refinedev.api.tablist.adapter.TabAdapter;
 import xyz.refinedev.api.tablist.setup.TabEntry;
 import xyz.refinedev.api.tablist.util.Skin;

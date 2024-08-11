@@ -5,11 +5,8 @@ import com.github.retrooper.packetevents.PacketEventsAPI;
 import com.github.retrooper.packetevents.manager.player.PlayerManager;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
-
 import lombok.experimental.UtilityClass;
-
 import org.bukkit.entity.Player;
-
 import xyz.refinedev.api.tablist.TablistHandler;
 
 /**

@@ -2,9 +2,6 @@ package xyz.refinedev.api.tablist.util;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
-
-import lombok.Data;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import xyz.refinedev.api.tablist.util.Skin;
-import xyz.refinedev.api.tablist.util.TabLatency;
 
 @Getter
 @Setter

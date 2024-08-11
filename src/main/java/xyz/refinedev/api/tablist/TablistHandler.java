@@ -1,17 +1,14 @@
 package xyz.refinedev.api.tablist;
 
 import com.github.retrooper.packetevents.PacketEventsAPI;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Team;
-
 import xyz.refinedev.api.tablist.adapter.TabAdapter;
 import xyz.refinedev.api.tablist.adapter.impl.ExampleAdapter;
 import xyz.refinedev.api.tablist.listener.SkinCacheListener;
@@ -126,7 +123,7 @@ public class TablistHandler {
             }
 
             // Destroy main tablist team
-            Team team = player.getScoreboard().getTeam("ztab");
+            Team team = player.getScoreboard().getTeam("rtab");
             if (team != null) {
                 team.unregister();
             }

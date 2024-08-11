@@ -2,13 +2,7 @@ package xyz.refinedev.api.tablist.thread;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import xyz.refinedev.api.tablist.TablistHandler;
-import xyz.refinedev.api.tablist.setup.TabEntry;
 import xyz.refinedev.api.tablist.setup.TabLayout;
 
 /**

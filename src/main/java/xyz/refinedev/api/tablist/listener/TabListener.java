@@ -1,14 +1,14 @@
 package xyz.refinedev.api.tablist.listener;
 
 import lombok.RequiredArgsConstructor;
-
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.Team;
-
 import xyz.refinedev.api.tablist.TablistHandler;
 import xyz.refinedev.api.tablist.setup.TabLayout;
 import xyz.refinedev.api.tablist.util.PacketUtils;
@@ -37,9 +37,11 @@ public class TabListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        Team team = player.getScoreboard().getTeam("ztab");
-        if (team != null) {
-            team.removeEntry(player.getName());
+        Team team = player.getScoreboard().getTeam("rtab");
+        if (team != null && player.getScoreboard() != Bukkit.getScoreboardManager().getMainScoreboard()) {
+            if (team.hasEntry(player.getName())) {
+                team.removeEntry(player.getName());
+            }
             team.unregister();
         }
 
