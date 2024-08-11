@@ -38,7 +38,7 @@ public class TabLayout {
 
     /**
      * {@link Integer Mod} is the modification integer
-     * used to determine rows/columns from index of the {@link xyz.refinedev.api.tablist.setup.TabEntry}.
+     * used to determine rows/columns from index of the {@link TabEntry}.
      */
     @Getter private final int mod;
     /**
@@ -187,7 +187,7 @@ public class TabLayout {
     public void refresh() {
         TablistHandler tablistHandler = TablistHandler.getInstance();
         try {
-            List<xyz.refinedev.api.tablist.setup.TabEntry> entries = tablistHandler.getAdapter().getLines(player);
+            List<TabEntry> entries = tablistHandler.getAdapter().getLines(player);
             if (entries.isEmpty()) {
                 for ( int i = 0; i < 80; i++ ) {
                     this.update(i, "", 0, Skin.DEFAULT_SKIN);
@@ -196,7 +196,7 @@ public class TabLayout {
             }
 
             for ( int i = 0; i < 80; i++ ) {
-                xyz.refinedev.api.tablist.setup.TabEntry entry = i < entries.size() ? entries.get(i) : null;
+                TabEntry entry = i < entries.size() ? entries.get(i) : null;
                 if (entry == null) {
                     this.update(i, "", 0, Skin.DEFAULT_SKIN);
                     continue;
@@ -366,7 +366,7 @@ public class TabLayout {
     }
 
     /**
-     * Update the {@link xyz.refinedev.api.tablist.setup.TabEntry}'s ping
+     * Update the {@link TabEntry}'s ping
      *
      * @param info {@link TabEntryInfo info}
      * @param ping {@link Integer ping}
