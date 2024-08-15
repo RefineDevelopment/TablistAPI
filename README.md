@@ -33,7 +33,7 @@ Add this to your `pom.xml` `<dependencies>`:
 <dependency>
   <groupId>xyz.refinedev.api</groupId>
   <artifactId>TablistAPI</artifactId>
-  <version>2.1</version>
+  <version>2.2</version>
   <scope>compile</scope>
 </dependency>
 ```
