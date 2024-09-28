@@ -1,3 +1,4 @@
+
 # TablistAPI
 Refine's TablistAPI | Custom
 
@@ -22,7 +23,7 @@ OR
 <repositories>
     <repository>
         <id>refine-public</id>
-        <url>https://maven.refinedev.xyz/repository/public-repo/</url>
+        <url>https://maven.refinedev.xyz/public-repo</url>
     </repository>
 </repositories>
 ```
