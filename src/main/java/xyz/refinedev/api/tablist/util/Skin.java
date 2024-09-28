@@ -360,7 +360,6 @@ public class Skin {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Skin)) return false;
-        if (o != this) return false;
 
         Skin skin = (Skin) o;
         return skin.getSignature().equals(this.signature) && skin.getValue().equals(this.value);
