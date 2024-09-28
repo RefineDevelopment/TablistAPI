@@ -36,7 +36,7 @@
         </repository>
         <repository>
             <id>refine-public</id>
-            <url>https://maven.refinedev.xyz/repository/public-repo/</url>
+            <url>https://maven.refinedev.xyz/public-repo</url>
         </repository>
         <repository>
             <id>codemc-repo</id>
@@ -47,7 +47,7 @@
     <distributionManagement>
         <repository>
             <id>refine-public</id>
-            <url>https://maven.refinedev.xyz/repository/public-repo/</url>
+            <url>https://maven.refinedev.xyz/public-repo</url>
         </repository>
     </distributionManagement>
 
@@ -55,8 +55,8 @@
         <dependency>
             <groupId>com.github.retrooper</groupId>
             <artifactId>packetevents-spigot</artifactId>
-            <version>2.4.0</version>
-            <scope>provided</scope>
+            <version>2.5.0</version>
+            <scope>compile</scope>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.code.gson</groupId>
@@ -66,14 +66,49 @@
                     <groupId>org.jetbrains</groupId>
                     <artifactId>annotations</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.github.retrooper</groupId>
+                    <artifactId>packetevents-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.retrooper.packetevents</groupId>
+                    <artifactId>netty-common</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-api</artifactId>
+            <version>2.5.0</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jetbrains</groupId>
+                    <artifactId>annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.retrooper.packetevents</groupId>
+                    <artifactId>netty-common</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>xyz.refinedev.api</groupId>
+            <artifactId>SkinAPI</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
         </dependency>
 
         <!--Annotations-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>1.18.32</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>

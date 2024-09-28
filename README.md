@@ -50,6 +50,7 @@ You can initiate and register a TablistAdapter using the following code:
 ```java
 import xyz.refinedev.api.tablist.TablistHandler;
 import xyz.refinedev.api.tablist.adapter.impl.ExampleAdapter;
+import xyz.refinedev.api.skin.SkinAPI;
 
 import com.github.retrooper.packetevents.PacketEventsAPI;
 
@@ -57,13 +58,21 @@ public class ExamplePlugin extends JavaPlugin {
 
     private TablistHandler tablistHandler;
     private PacketEventsAPI<?> packetEvents;
+    private SkinAPI skinAPI;
 
     @Override
     public void onEnable() {
         //this.packetEvents.init();
+        //this.skinAPI = new SkinAPI(plugin, gson);
+        
         this.tablistHandler = new TablistHandler(plugin);
-        this.tablistHandler.init(this.packetEvents, new TeamsPacketListener(this.packetEvents));
+        this.tablistHandler.init(this.packetEvents);
+        this.tablistHandler.setupSkinCache(this.skinAPI, true);
         this.tablistHandler.registerAdapter(new ExampleAdapter(tablist), 20L);
+    }
+    
+    public void onDisable() {
+        //this.skinAPI.unload();
     }
 }
 ```

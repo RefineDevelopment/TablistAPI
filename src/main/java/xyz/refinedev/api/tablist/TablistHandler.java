@@ -1,21 +1,26 @@
 package xyz.refinedev.api.tablist;
 
 import com.github.retrooper.packetevents.PacketEventsAPI;
+
+import com.google.common.base.Preconditions;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Team;
+
+import xyz.refinedev.api.skin.SkinAPI;
+
 import xyz.refinedev.api.tablist.adapter.TabAdapter;
 import xyz.refinedev.api.tablist.adapter.impl.ExampleAdapter;
-import xyz.refinedev.api.tablist.listener.SkinCacheListener;
 import xyz.refinedev.api.tablist.listener.TabListener;
 import xyz.refinedev.api.tablist.listener.TeamsPacketListener;
 import xyz.refinedev.api.tablist.setup.TabLayout;
-import xyz.refinedev.api.tablist.skin.SkinCache;
 import xyz.refinedev.api.tablist.thread.TablistThread;
 
 import java.util.Map;
@@ -41,7 +46,7 @@ public class TablistHandler {
     /**
      * Our custom Skin Cache that stores every online player's Skin
      */
-    private SkinCache skinCache;
+    private SkinAPI skinAPI;
     /**
      * Tablist Adapter of this instance
      */
@@ -56,7 +61,6 @@ public class TablistHandler {
      */
     private TablistThread thread;
     private PacketEventsAPI<?> packetEvents;
-    private TeamsPacketListener teamsPacketListener;
     private final boolean debug;
     @Setter private boolean hook, ignore1_7;
     private long ticks = 20L;
@@ -71,24 +75,27 @@ public class TablistHandler {
      * Set up the PacketEvents instance of this Tablist Handler.
      * We let the plugin initialize and handle the PacketEvents instance.
      */
-    public void init(PacketEventsAPI<?> packetEventsAPI, TeamsPacketListener listener) {
+    public void init(PacketEventsAPI<?> packetEventsAPI) {
         this.packetEvents = packetEventsAPI;
         this.adapter = new ExampleAdapter();
         this.listener = new TabListener(this);
 
-        this.teamsPacketListener = listener;
-        this.packetEvents.getEventManager().registerListener(listener);
+        this.packetEvents.getEventManager().registerListener(new TeamsPacketListener(this.packetEvents));
         Bukkit.getPluginManager().registerEvents(this.listener, plugin);
-
-        this.setupSkinCache();
     }
 
-    public void setupSkinCache() {
-        this.skinCache = new SkinCache();
-        Bukkit.getPluginManager().registerEvents(new SkinCacheListener(this), plugin);
+    /**
+     * Attach the plugin's skin api instance to this tablist.
+     *
+     * @param skinAPI {@link SkinAPI}
+     */
+    public void setupSkinCache(SkinAPI skinAPI) {
+        this.skinAPI = skinAPI;
     }
 
     public void registerAdapter(TabAdapter tabAdapter, long ticks) {
+        Preconditions.checkNotNull(skinAPI, "SkinAPI was not registered!");
+
         this.adapter = tabAdapter == null ? new ExampleAdapter() : tabAdapter;
 
         if (ticks < 20L) {
