@@ -2,9 +2,11 @@ package xyz.refinedev.api.tablist;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.PacketEventsAPI;
+import com.google.gson.GsonBuilder;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.refinedev.api.skin.SkinAPI;
 import xyz.refinedev.api.tablist.adapter.impl.ExampleAdapter;
 import xyz.refinedev.api.tablist.listener.TeamsPacketListener;
 
@@ -19,17 +21,21 @@ import xyz.refinedev.api.tablist.listener.TeamsPacketListener;
 @Getter
 public class TablistPlugin extends JavaPlugin {
 
-    private xyz.refinedev.api.tablist.TablistHandler tablistHandler;
+    private TablistHandler tablistHandler;
     private PacketEventsAPI<?> packetEventsAPI;
+    private SkinAPI skinAPI;
 
     @Override
     public void onLoad() {
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
 
         this.packetEventsAPI = PacketEvents.getAPI();
-        this.packetEventsAPI.getSettings().bStats(false).checkForUpdates(false);
-
         this.packetEventsAPI.load();
+
+        this.skinAPI = new SkinAPI(this, new GsonBuilder()
+                .serializeNulls()
+                .disableHtmlEscaping()
+                .create());
     }
 
     @Override
@@ -37,12 +43,14 @@ public class TablistPlugin extends JavaPlugin {
         this.packetEventsAPI.init();
 
         this.tablistHandler = new TablistHandler(this);
-        this.tablistHandler.init(this.packetEventsAPI, new TeamsPacketListener(this.packetEventsAPI));
+        this.tablistHandler.init(this.packetEventsAPI);
+        this.tablistHandler.setupSkinCache(this.skinAPI);
         this.tablistHandler.registerAdapter(new ExampleAdapter(), 20L);
     }
 
     @Override
     public void onDisable() {
+        this.skinAPI.unload();
         this.tablistHandler.unload();
     }
 }

@@ -5,6 +5,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTe
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import xyz.refinedev.api.skin.CachedSkin;
 import xyz.refinedev.api.tablist.util.Skin;
 
 /**
@@ -22,7 +23,7 @@ public class TabEntryInfo {
 
     private final UserProfile profile;
     private int ping = 0;
-    private Skin skin = Skin.DEFAULT_SKIN;
+    private CachedSkin skin = Skin.DEFAULT_SKIN;
     private String prefix = "", suffix = "";
     private WrapperPlayServerTeams.ScoreBoardTeamInfo teamInfo = null;
 

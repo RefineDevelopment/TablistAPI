@@ -2,289 +2,325 @@ package xyz.refinedev.api.tablist.util;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
+
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.UtilityClass;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import xyz.refinedev.api.tablist.TablistHandler;
-import xyz.refinedev.api.tablist.skin.CachedSkin;
-import xyz.refinedev.api.tablist.skin.SkinCache;
 
-import java.util.HashMap;
+import xyz.refinedev.api.skin.CachedSkin;
+import xyz.refinedev.api.skin.SkinAPI;
+import xyz.refinedev.api.tablist.TablistHandler;
+
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author Elb1to
  */
 @Getter @Setter
-@RequiredArgsConstructor
+@UtilityClass
 public class Skin {
 
-    public static final String TEXTURE_KEY = "textures";
+    private static final List<CachedSkin> DOT_SKINS = Lists.newArrayList();
+    private static final ArrayListMultimap<EntityType, CachedSkin> MOB_SKINS = ArrayListMultimap.create();
 
-    private static final List<Skin> DOT_SKINS = Lists.newArrayList();
-    private static final Map<UUID, Skin> skinMap = new HashMap<>();
-    private static final ArrayListMultimap<EntityType, Skin> MOB_SKINS = ArrayListMultimap.create();
+    public static final CachedSkin DEFAULT_SKIN;
 
-    public static final Skin DEFAULT_SKIN;
-
-    public static final Skin DISCORD_SKIN;
-    public static final Skin FACEBOOK_SKIN;
-    public static final Skin TWITTER_SKIN;
-    public static final Skin YOUTUBE_SKIN;
-    public static final Skin WEBSITE_SKIN;
-
-    private final String value;
-    private final String signature;
+    public static final CachedSkin DISCORD_SKIN;
+    public static final CachedSkin FACEBOOK_SKIN;
+    public static final CachedSkin TWITTER_SKIN;
+    public static final CachedSkin YOUTUBE_SKIN;
+    public static final CachedSkin WEBSITE_SKIN;
 
     static {
         // Default skin
-        DEFAULT_SKIN = new Skin(
+        DEFAULT_SKIN = new CachedSkin(
+                "default",
                 "eyJ0aW1lc3RhbXAiOjE0MTEyNjg3OTI3NjUsInByb2ZpbGVJZCI6IjNmYmVjN2RkMGE1ZjQwYmY5ZDExODg1YTU0NTA3MTEyIiwicHJvZmlsZU5hbWUiOiJsYXN0X3VzZXJuYW1lIiwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzg0N2I1Mjc5OTg0NjUxNTRhZDZjMjM4YTFlM2MyZGQzZTMyOTY1MzUyZTNhNjRmMzZlMTZhOTQwNWFiOCJ9fX0=",
                 "u8sG8tlbmiekrfAdQjy4nXIcCfNdnUZzXSx9BE1X5K27NiUvE1dDNIeBBSPdZzQG1kHGijuokuHPdNi/KXHZkQM7OJ4aCu5JiUoOY28uz3wZhW4D+KG3dH4ei5ww2KwvjcqVL7LFKfr/ONU5Hvi7MIIty1eKpoGDYpWj3WjnbN4ye5Zo88I2ZEkP1wBw2eDDN4P3YEDYTumQndcbXFPuRRTntoGdZq3N5EBKfDZxlw4L3pgkcSLU5rWkd5UH4ZUOHAP/VaJ04mpFLsFXzzdU4xNZ5fthCwxwVBNLtHRWO26k/qcVBzvEXtKGFJmxfLGCzXScET/OjUBak/JEkkRG2m+kpmBMgFRNtjyZgQ1w08U6HHnLTiAiio3JswPlW5v56pGWRHQT5XWSkfnrXDalxtSmPnB5LmacpIImKgL8V9wLnWvBzI7SHjlyQbbgd+kUOkLlu7+717ySDEJwsFJekfuR6N/rpcYgNZYrxDwe4w57uDPlwNL6cJPfNUHV7WEbIU1pMgxsxaXe8WSvV87qLsR7H06xocl2C0JFfe2jZR4Zh3k9xzEnfCeFKBgGb4lrOWBu1eDWYgtKV67M2Y+B3W5pjuAjwAxn0waODtEn/3jKPbc/sxbPvljUCw65X+ok0UUN1eOwXV5l2EGzn05t3Yhwq19/GxARg63ISGE8CKw="
         );
 
         // Social skins + 1.8
-        DISCORD_SKIN = new Skin(
+        DISCORD_SKIN = new CachedSkin(
+                "discord",
                 "ewogICJ0aW1lc3RhbXAiIDogMTU5ODkzNTkzNzY5NywKICAicHJvZmlsZUlkIiA6ICJlYTk3YThkMTFmNzE0Y2UwYTc2ZDdjNTI1M2NjN2Y3MiIsCiAgInByb2ZpbGVOYW1lIiA6ICJfTXJfS2VrcyIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kYzU5ZTVjN2IwNzM4YjU3OWYzYjQ0NGMxM2E0N2JlZDQ5NmIzMDgzOGIyZWUyYjEyN2NjNTljZDc5OGFlZTc3IgogICAgfQogIH0KfQ==",
                 "d00dnONViJCmrK0WdKODJ7tFb8vGKL+/GEq8NAqIa0jLNuCjz6pz+Rk/eoflg6vNnYRueD5c3f3M2ohM7dbggY0LZC9x2ef7/PYF57gRkA114DXJN/lZcq8vXQcZNFPqRiLlrMfzB2JwTyuCg5Ssoww3i5Fz4J0h9Y+ok8e9LfQzY5ficfyuo30cVB88ybQ5VS2Q5kxLgodrYgX+IUAJr+ns4Y48tKzPEVn4JGlJOLpY0tk8OMNTqFRlHw3cPMLQENeKb9OJQsstjsGHT4mvk7I8y/WdD0oUCj5xVUER/vgFBVwZuRJSBzFbUa5Hq8Z3JlriueQ/iCwR9t92yJGPQwB0kG0OH2wgolDgm2of7+1+67yZDk1X56/W82pxW5MEKjCnkfkGuGLvbydp8tf+6P4gX6mtWJudzibEpA+L5dfdHRJF5/l8FE4gqmbCKBhYdRT2keR/acB6bBF2g0vY1VCvaJe4vb3gFB4+FViDwnDhssLpHwgWxR//LEWrP4fmCJgLee2EYfySmMeVTW1gknHptIMJQtV92xxmft+vRi/WV3hqIkRNkBMI4+1MO96+buesKHUHg5yWH7TixcrFvbH8q3SAhQGqwV8Ksv44jSC8Bch9YP268DjruN6+TC/Lj+fGcFe9tErlbYM0hVCMUEeRDhQ3PzpThUegQmJ7Qk4="
         );
 
-        FACEBOOK_SKIN = new Skin(
+        FACEBOOK_SKIN = new CachedSkin(
+                "facebook",
                 "ewogICJ0aW1lc3RhbXAiIDogMTU5ODkzNjE4ODI3MCwKICAicHJvZmlsZUlkIiA6ICI2MTI4MTA4MjU5M2Q0OGQ2OWIzMmI3YjlkMzIxMGUxMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJuaWNyb25pYzcyMTk2IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzM1M2IwZTIyMGYyNzk4YjY4YzRmYzg4ZWY2NDU4MDkxZDcyMDU2ZTFkNGNkOGU4MmRkNjRiNWQ2NTcwZjM1MTQiCiAgICB9CiAgfQp9",
                 "aT/m2pZfq9tR1QwcIIgQTm8ytO4BRLXj5eZxZaFEr1k8IK2+utDCtfErrWtA5fNnWrkyj4AspPKT0Cw0WmgsYyqghhKBi9VS5CUCi/o2i8H6K76vFiYO5+5sKJ560RoPC/d2yJ/QS1qa6tbqD+8cIT4Hrh2Ni3ouuEtz1/MPg68p/EqkdNQEzNKE7xnuH9BFX06JLiKql35t/Mk/iMC3WdqCp1SuEmFE5sXEwfR+YpB3fuhmwi6xZj66TaVSZ0WFVkI1j09ROnVAcdhUa/yj4Q/kKBCeV7/4LsBeQhkr2noJh2UFDYPTSpQSgeNBlzgvSMr78CPLIVdpeyQ6MuoiG8HED5vytwJSymvgIf8v94tsDB8s8HfKwWIer7FoZ8kfY9BGhoXw22wCnmkRtzEVB+8wSpIKxwrjYMrSGiTIh71wrLkPi3nBVzy0lAEnQPmm7qePjET8R/l4LWT3kWojqiqS+YwMIXecSWTlhbquI1d8F9mFmDXYh+xSXsD+DqGpVlKuCn9RKXBrtaDIQtXu/5AxryQFgSSJOinxweOwlUAgFmiB6bO20KUfLM3YXdaxK7NNxCPVAoGb3gmvlsSpoGCW7KRobVwVNLQaCSzcXwE7WeRb1+c/xb918+b98eaGj7iIHicrxOMfuXOWEaDHDrrAXVydhEhcS6+3eccVZ84="
         );
-        WEBSITE_SKIN = new Skin(
+        WEBSITE_SKIN = new CachedSkin(
+                "website",
                 "ewogICJ0aW1lc3RhbXAiIDogMTYxMTgxMTQ4MTc2NCwKICAicHJvZmlsZUlkIiA6ICI0OWIzODUyNDdhMWY0NTM3YjBmN2MwZTFmMTVjMTc2NCIsCiAgInByb2ZpbGVOYW1lIiA6ICJiY2QyMDMzYzYzZWM0YmY4IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzc4NjdjMGZhZGY0YzVkMDk5MDcxNzYxYmVkNjlmYjQyMTMwMDE2YmU3Njg1NmMxMjNjZjM4Njk1MTY1NDk0NzQiCiAgICB9CiAgfQp9",
                 "YVnjGNGIoO97WJFehSbnGZP16yMDbC8hi311MxZC9XzIR5qruq8inQLdON8RPKUDzcFg848LkqwobDzDPTg5wLeLOQc1AD2BCA+Th/Z5nTjgcOn19MYbgscLZriXsTQMhMI6TcVzaGMTa8KgPaSFz8UZB3zzkTGRZC/YofAiJrlSKi94Xj49Ln1OLNsnD+BZRWG6JHOlEkryMkBVf8oeTS4iY9Cp2XUeSGm83XhBkmSFixaNJ2rD2CjAk8cWcZgYb4rqbevUai8haUMwli/ARyGNnFnOHV8lv1ruheE5MwWOdQHUJZmYX6V+MYv31YCpsgABs6YWQqeU4BO/5f947VJVoNn93v5oM6oi/a7j9ChDYKeOzwpmL+wktnO9Ka8gPPbrIr1K9X3KTWvvNAXv/vufhbTZaEeDyzZ4asmz6kZOl7FCXiB/QBnQ89RJ/e9vfHsLyXutgnOLfsQNTwJyy7cvi7YjtVhIsIiSssduW+HtleMdXkdo8K1lMiisRmceK45c16Jh8Lhhxp1nfSBEyZV4zVTc+5Q+O0Hg8o7XURx6u7kqWY7XzmCjB91JUbr7lEkBRPcoIW7RjyVVQSLFTTnCfJcHr6hRNR4nuYlNXptCfjp8Z2MIO8Db5preUR42YQlgEuM8opIOSBfgHvfQom9a7ehZKtfvkfLnVWUlWIA="
         );
-        TWITTER_SKIN = new Skin(
+        TWITTER_SKIN = new CachedSkin(
+                "twitter",
                 "ewogICJ0aW1lc3RhbXAiIDogMTU5ODkzNjM2MDYzNywKICAicHJvZmlsZUlkIiA6ICI1NjY3NWIyMjMyZjA0ZWUwODkxNzllOWM5MjA2Y2ZlOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJUaGVJbmRyYSIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9hNjFiZDYyNjEyMzY0MDFlYWQyY2YzZTI4NjBlOTg5NDcwNDM3MTVjMTBjNmZiZWVlMDMzZTdlNzE2NzhmMzAwIgogICAgfQogIH0KfQ==",
                 "WWGuBEL0OlGmc7dhEiERLmv3MimSzTcg3cEqNgTVAQzGuidFN90YeE7EjUqAQXlgWEswXuXCJlMxYbM8szLkQ7tJiN7fQYKeqWeSU/GZUXTEuwkDudTF1en6lKx43i+iJEd46UMowBPO8inSjYJfLmMJn9+IStcol87o0TYce3iFjAHQtDootygAqR3w6LsYbABbfabFiHLP7r0FpqzO21xCyIJ6fcmRh8jEawJ56i0WuyaK+DuSa5COIYYQgNtfQJ1K4Bo18yuxFgi3uDvksK+p+ZfFJTdcKoWFO6SmLZpYLDaRL+dg5HZhYjfF29J8SBWXgDjJhjDXJ6fUpy5+2JEvKfZJHyGmqx4NrKF4Nku1Dof1L4e/m6P9Rzc79AjA0UpAX5OrVK7MaUm8LySM0b38F8TSHtLlK+BTiwbrxHKJZja280cOJsnOw0FI34g//0neLUv5mZlX6RT6ZuEebX6F3bhdCP0orqsEV8SgFjumGQmcWd4KeH8bk21ZOPoUeVoeh3HAHF+CbFydp8M1q5jAhupf4/bVFdmyc7lMMrL+DD/RqAo3xTbSbyxjWp21Hd0yIUcT83bAAIa+AyolGHmsI5rtr8P9zcEcsfMi8NEH0GhEqEKoYoSAzSNQ+6BF4GOcMbO4+MLtUZO6EPCA0pXwXRD5765ZvYIdVgi4HVg="
         );
 
-        YOUTUBE_SKIN = new Skin(
+        YOUTUBE_SKIN = new CachedSkin(
+                "youtube",
                 "ewogICJ0aW1lc3RhbXAiIDogMTU5ODk5NjQzNzA0MSwKICAicHJvZmlsZUlkIiA6ICJhNzFjNTQ5MmQwNTE0ZDg3OGFiOTEwZmRmZmRmYzgyZiIsCiAgInByb2ZpbGVOYW1lIiA6ICJBcHBsZTU0NDciLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmExYzQ4YmYwYTIyMzBhNDYxMDMwMDY1ZWI5NDFhZDU2MGQwOGZhZDUwYWU1NjM0OTczZTVhYWVjNDcwZTZiYiIKICAgIH0KICB9Cn0=",
                 "ljAxdmighg13rgsWrkIuLmtPF/cNi3nVccEQSJD2FSwGvF7avKDuh9xV1ybM4XdHQVusdFSsdEhofDktszyMauUOvF/GZPxGGG+6WDG1HSPD3JmbUckYdd0608unBP8atA7TThUyP3tncnHhn9MtUbVwdq6WCtSCWw0LejLyyOHz4mSzMjcfbZUkOKhRf6zZ3ZjvLx92UDMiOFJcZ+HBXMIrpFgO2RrJvxJpVQYCFZptdCcPyuwh5Di3LVmy01ZAp4hfxCVOIjpcNMd0UcgjYdmDvGSFkXZty2DaVFma3OeowNZS2ISjG4E3GbBmPBSnctiT60ugrSmFQk2/9oHYeO4cs9cuW4baYOY2yHrNwsTWYjIoqf84wzzlpYxwWNejXYa6ckc3iM9ycgaGeCes3pzG7U01M7qQl85xigg5c0CZFgrjMCdCMwG8cp4uTtNY3TZg+jK7PtYE1QCrq6uIwBeBAN0/Me3lNgKEVKDXrsvtmUvTp5eerlm1lpQGIdF+L6HLV9ZBDWRV+gPEjgeZPdQaq4QmV3/88xs0SGScwdJkT3dRy6fdVnseYLZhSWeqP9cy28vm32JcTcOZMEbc6JBrwmj0POoE8PlllaSotCqW/RGopSiDAzH/tGhKTDX8XDYwK4eQ8jj+8frK1Q8S13wKCpdpGRGpQtZQfG1ntxg="
         );
 
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "black",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTc0NTY5MDEsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS85ZjcxNTBkM2U1ZGY3ZjIxNzEyODlmM2M1ODYzYzkyYzJjODkwOGMzMmFkZGM4NmVhN2Y2MWVkODQ3YjY5ZCJ9fX0=",
                         "v4HSztoVOn0TMBHyDymPBItvOpWs8z6twVamfdrE4yhr8HZoBYWzl+qxfWu+8+DNyBSCpN6nr/UQpFErdys9Kk6urIURx8mEeWDXcYOhXrFs7oNpXiD7UvYm4nd+vNr0xbpfQmSXBGIZ+eOei4ThbKdkSIB79mlq0ugbwxCsK2I8kUlUU6+KnsunPr80adcPu9RryAW00Bmta+eP65nIKwUWNKeLb5iHaPq+N/IZ5aKHmLFiSXiWniDB5UAYybkBZFuvosSr4TBpn1pTbEF3PtKpnPM/8mpt+97W1JcCAv0mdFZUr0hT9eMAe3U0r37J4w/RmLd0sCD7zOBX0pIPPIMrXOQ4DfuDbKSJPXyXiLQQrWCHYnOO8+8kiQcoQ427trsb2y+jMwYel2GEU6gS5zOdkkVm8Je6tNxgA8vRGqA8ABW8SVQz7y5spk2CGiTQQbV3EeJwKcZHXAAplkoSB0p8fRE1fEY0+REoETg5TbguZnONm1+PdW/LdLifL2tGClSz6Nb4D513zZuJaFc/dQ7yagJR0cFkuWVuI59ZnoKqiEW+tMsrhn7QwCwGN6eASHd9seNvnTXsGOyZ0iOWFCay7JWOGSMr8iGiYCd92kn4r+UbCJ+OtokHzxFIoEHr2hRnN6thye27/tpP9Is7cmmmrDAKvecGtYfsrCVmTIw="
                 )
         );
 
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "dark_blue",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTc1MzgyNDIsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8zM2I2NWQ3OGMwYjI5N2RhMzgxYWJlN2JhZmM1ZmE2YzFhZWVhZTY5NDcxZDlhN2JhYWQxZDQ5Y2FmZjVkYjkifX19",
                         "mKqD4+2/uXiIjNmtQDcaGoxghxN3d+YFX5VgVHO1whwWSdEzRtNj3tw5CJOyBZVzQh6GfYqqi38ylfCiBq6t3JAYfaf4BxsDSKyq4yRfNb2JnYQoXGrhIhwMqEEyieXoJUshnBXpneASDf0a+BE5hN29l2vqQGs9VPKggqbt2zpZHyUi6tQMlwOiL+jDKh1bcSr4Wl1Ad8JC/BhUXytOR5u0FWm4vOEsqq8Td7S4Jm+XzgwxogtrpeVhRMFwYL7snjehYF3qh1W9p8PNmJGtZ9AApUctc/qEVnWeCOnDAaKgqozj4ruc4Xk2KMXxj0GmDS6b65C3m71MG+cW/0sS/Rx8vmif9SJum+E8C0X8inNr1nui+3ulmwqC3x0MeVsp81cr+LJIA2dcryKVWV3W6hkYuc3OBUjxrN6NOP495fEsPTFx33eop+pajS8g8Re4drNYHUSy7suzDOq+Yv1XM3hOASN/msCU79/tj1G7HIQ2+RHz2eFZlUWC3IEX+5BM5cf7uK1hhkkbejUkmQSblFGeuTnUdV7Yr6kmn0kXQbHAOIrRvw8d91x1lHoX7yjh+HbG4+RymOcm09MJAfdaut7Q8fINHM7rsiHOT6P0Tj7u1UXUUT9w9YXkVgEPCpjSjsjfkGblq/bzDzg8d/es3aZd00WmqFGjlNMx/EKVf/A="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "dark_green",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTc2MzUyNTgsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8xMDU3ZTUxYWE2MmFmMjQ4NjdjNjc1Mzc4NmYyMzRkOWJlYjI1NDEyMjM5MTc4YTcxODZkODE4NjkxNmU2YyJ9fX0=",
                         "P6gT4sSTDPKon9h+Qp/JEK1minlQQRi0ReIsYdYFzHiVpOejPxq4MU+0Ebmvs23mgX2tgqUQV8oeHK9xNCoTB4cKrLMq0U7JJ4C6ShCrQXL3Mr6MilVIDUbP4Fvj9uLU9vFCEiyHVnYwKlnIsnDxnOOBFzki5TyaFTVt2LeNrlso6eh9ARpa5PCAevtEDDrZ51ftvoI268RrbQTfgE7coiDYAcEzgSY9Lm5I9vQxIN6VWhh/tUxHHdn8u1eDIbga/I/EuQZ6H+V0E3THmR55ob4mKZ4e3TYWWRRlOIZPOdFcPIluVdkVZG03cQfw8RYsON/dazBnbME55NTF8U6ovyDWcwYhCEJtRtA4yGMOocX06InRDOkmFk8FcomtJF0WFSSZRbNfxEmG1XXZx1VtKX4eYR97Y/ihOBilN+Aq5yQ2AB+JvEPb1NFiQHdu3mQ/E4tJxKgsorFd75xbPBV7A/mPsrUV2GHvLFJzlBQGDYJCWqqIEdRV/V417j0XlpM+D7UBiIekcsDo2ajOg0v5mQqGF5d1+H16K58PgAOkPLmKwy3lTAnpPWhSWfcrSbkon93eezlD6eMZie8YG2ucaPR9TXYXRwLxK9DrCx5ZfzQV4lgeDSsL2i8kNnYmTLZ1DnsVw8IwWifUFGwwapHFWO1thdy5yifjaa/AOWYTJQE="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "dark_aqua",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTc3MDY0NTAsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9mODZiZmEyODRjOGM1ODk3NTFiMzQ1NDA1NTc0NGM4YmM0MGVmNjVlYTZiY2RlYzc3NDg2YzllNDE3N2FmOSJ9fX0=",
                         "LGisiuVbSaI9K2dXN9CsV8SxuXieWvCHTg1mdjUh744AYQBbINiEgEbXiFz3cQXzzJttUAW8MPZyBnl4qxJr5QRXd4mB8bOd6nA9eimRPiCIpS8QG6V5YZWdyEvKuV+xpdWNkB8I4kpgkRFBmYsKNWeg3xhmgeA0QP1kpadGKU4oOMb5vzUzsIVbyycjhtGcRNuGKjZaNoHVssuTUpi83xIqdCPI353rsltncBY4Idheig0cUzBXqvLX0K3pVxVgg+jQxRPRlGdLhiMXXs6IkRj1glvcZO4MEMg4IfA/W6Vq4UiVG6RpubS53jDJDt4G4ZrtSVX07rQOowHlnY8xIgtpSAbW2iy+uHu3mvv4lWATZE7irU3QrRg7PUSZYSIihqY+CWp8eJwhs+JxTTBMqCzfv5HvZg73WVj2003JTIIxtqTyrlBxIa+4DnPBhoCJ+N0v7wmLdZQC+PsVaRAC8nrlhgDewfglW9HHhqU8m5LVa5gDyMlkIOo6w8cW3mOCTqndGNf4GmDVCbli5Yu5SptaZXvibCp8HcNmkJdP6yf4h/hKPEvOc1QzQOm4L5+9jJxGtpZA2+sTDXqucI2TPy5XNxd9+GaZP9J/xMiwihqeGYmNXbjCJdFSE5NX71HH0NbIVQu5G2VIFccuKkz0iDP1vl60ZiHZdVhn3DcL1gY="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "dark_red",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTY3MTU0NzcsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS82YWM4ZDlmNjQ1ZDU1MDE4MzRkZGZjNGY4YjVkMzIxNmQ5NGYyMTEyOWE2OWQ4YmE0YzJiZjE4YzE0MzEyOWQifX19",
                         "D7ub7tuNpCdQckdl9tMJMoSF9XfEAhL0UA4hqMNUcm++uHJviVXbI9ePlg98+N5aisqzVj19/Ld1DaJENFH8eKtQ+lhvzS6Rh+x/JF/QGfDGbWSbx9J9H86LvJpY28hQ/XJ1cFSmtqK5xlnXBNilFj+sAtqCJ+KRdPzwnhgvMNqFMmy5op4qjHaQH4QN997DDF8RWt/9dMzoBDS32sr9RAwzyQzuRsa2mHyMbrrPzST78tcyBWk/dddE5zY9qdt7sDtkar3hDOEMgrid+ChxmAlh/LulaXhpW2S0XEsUEY3uBc58iNrnIWaQedaYYaFFdXPe95BPMaMXtgHblRsOhWlvTAXv9P/CB3v0PKlbfH+kFZyf/OgHfkZan575dAdeEl5mVdT6h7rqriau3MIj/MPUX76xMY+0cbNUGG8Dmw5s6Fw2CnkBuRJWaf9NlSynxm0S/K8BqF/UdGCHc3BVYJ54Bhc65KyN2EONaON2OT2p41Ssvt0Z1UEdb9w+0G+pMYJ9qp/firkdsyQC0VQepymxTDvsmhrA+MC/fb4QL47XucJIFGzhi/qbxj+AjKSt6jhbqYUNE74Y4S8U6fsjIko5dEiQ1eVhq+TOsGAiF0M5M84Jpcyh3B/agvJLic4zIwR0AEE91Ok5ZM8hOimhQf206XvYItw3FqNGjdOsiPw="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "dark_purple",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTc5MTAxMDMsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS83NmNiYjYzYWFjMzM2OWE2NzI1ZDQyZmEyMjM4OGFhZmUzYzFiM2YyYTE1MTlkMTA3MjE4NDMxOTgzNWNjYyJ9fX0=",
                         "QUWtd7snPe+R9CWdOgAVlagJE79wO4NUGouqctu+/38p2L2b8PRyFydPURaN7gimsBd3+XM6fd2SqS5goc/wj/YXn7FKrIAWP7Wlq1+638006wKaqtyeIXPIOEGBt5fZ/ooYvKDlVjEkyZ1MHwhUVtkmBDUGkvG05WKOJ0LscyCuUw93qfE9LJjowMLubIw1Aq3gSo0dmcN+KcSebHxP7ppThE14BZBrUr2h5zbu1LLYSDKgjFiO3BFkVKFTXtz8P3/kLprQUycT+ojGf8aye2WjO9GlEkiEEj/MLb31B8ImbOZcFWpmqEGfxctKyK2UNZdVrof+Y2qKpZMMVcn6H1SWCM+H/vt7y0wxs9j6kk+xkFTgQJUJY4Y+lBuT+id5Zm0iP3Ua/dCauhlQNezWvCnvx/ICKtGaibzpsouScj/2XMapnQQBNnurTK6v5viDvlt3vF5sdg/pRYDtqyKF6j0prBjQJBayAmANMIefAVYKwGyHONg+JJi72JEm9srIamp1a3ijfP+gYj/1wKtu38w4t3Yfbr7PRO5ArhZbUKvxw+nIDRPwK41SqARU/j9aWVtsud4ASigNno8KNndH9Q/RIfXXukKBNi69PRvPgG+FKhrpN+U+13Zcdzx0mtkMK+ZGb1Qp05Ko7gDfCFawWQE8wKiFC6mIWzWVSeCMqdQ="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "gold",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTc5NDUxMzEsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jOGM0ZDQ0OGIxZTEzYTI1ZGUzODg0ZGIxN2Q5YjBlZDM4ZGY1ZDEyM2RlNTc3M2YzODIyZWJiNTNhNzYxZTMzIn19fQ==",
                         "gdr3b0Zy/uOlU4VdDuAmnPGhKlg9qImK4zj0qoisJZfiVYrPNPeQCocxVvnkAYqsuTsoe7UUo5/oW/G6Z6AKw+2aapkNbUSwxhdCb2vLmnIt8WGhxTxKcd2OEdCnAmCNgtcF8kF062yK8Enoni2eJI2oV+7MektoFWV5pWBkSmhNMBuw5AraYv9S0+zJTYjX0eANTuNXV+VKnfzMCcKuyOBwqXhNMzL9vmvXTMBJAr9bYx/xH3POO5xhGRrW4NyuWSE9SXhV4NngSR+59kImfZmSA6d9kuK26feZrfRrAME/UV2rjbnT4WWumYzvrroZKJBcq++yBEsVluEagkWzs8UXOtOiNYttp4ETg19aYObXdQSLGFRzTeVCVw4cHVSX6Svbiie/Kyr+s/5fQX7/LCs7uVlclPMrabQiam/DzDRre3hbEHXTfiUCLFQLjyqOQ1+gsPqWN2E/HMj0I9gbKL6qrgRVstvTf97UXqXxXudbOC3EthdgAM4n/lR8s6RqmqwzfdkWAyvYGW2c49tImnEtaltwhzeprURNy/dEbLkU3KYfXx2nVHO7+d67WJscwHiffyxDpLwTWkclIrC7bl2SKyfib1cElDqzXNzKYeqZ595PkiHeBBRjL9CWLTlXcLMWuJtdqvquCXt6oJ7EtalcVhKE6DHXdtBDDYDaWpA="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "gray",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTc5NjU3ODgsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8yYzkzZWJjNzc3YTg3OWVkZWViMTFiOTY2MWNmYTZkNzdkZjk0ZTY1NWM0ZTI4N2Y5NmY0ZmY3OTI1Mjc2In19fQ==",
                         "jL/5arN/cnJbD/DZG9HTo1ckkwZk+XXYUe6QUqbZ0QAm/wecw/mDZqvGwqwnngsgyg0UelxPHvRK3J3z3SdVq7Kavq2UdGkFLr1fe+34bxTnzricHXs4baYDQPOunmbdHgDs+7wwjYJbuQ4nNRE0vQsCmMAe2epchFEDRsiWYuBS0bWCDtQzCBJasGridmH8MIpBmicKQ8OWor9q9T/Pvxh1KEJdpFJuvEGS6xA1J3GxuRT6Iq1elATJNhW3P0MeHU5f/C8N42clLy9K2W8DGm0VuDQbYZmBCaxYcIo3kbkAVVZ6LGHfO8q0kxKIq9q+qXcmn5TQK3BmyjqTGY3PFYRVR9thgA+LWk1s1Ln1jA6ousckJmQJa1eW73mRt91fvRVAMUGm5qrwScL6q2pe3BjBfB3OnilSR3x2cdwM3WkmfN8VuELykJvxHIhDXGCxI5Xg4ghPyZvqW1NNTJmCUokp/fEt+64ZkXoqXzzV88pGZXuVC3ySgg4hdhL4he0tUOVQHttls+lQ2id6R3XaHdh4Hlk/EjSDM5O9auenvKdKAis+vVUV2oqJ+XGb5juD/MOG/INieNfuhQArWeTxyeufsOj8llWEcyYVRVcmJJfjrAagSLuY9OfoNVlSBM2wP92tzQUXQrvHM+mqw9gDlhudOnJAyP6iP8bVsqPN1bU="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "dark_gray",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTgyODg3MzcsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9lODQzY2ZjM2ExMmNiNjQ0MWY5NjA5MDIwNjM2NzI2NTdlMDhjNmQ4MzQ0YjUyOGE4NDU5YmQ1MTYyYjJkNDgifX19",
                         "nPEbxncNxOm4I6BEsRQ+nsSy5qXKsvKkKLTYHUkze9fQS5JYyiTgAuN/ouljx8fBSbEBdFWxFZq68WxF5h3QDIX7O9x2OFtx9L7vURndZ9pACBRJehy2Kt50eLlEeNMfg1z12J0ODQ36fKbujUYK4ad2ZkM+IOd+QGRV2EDRqFpKC4NMIiXnQ40RYo5GJBAIuW96kioCvaN7+jbpyKW7ub9RAj7dVlXeBbP7cCYvPHb74Ww/lw/EhcsbrwH92eqrApr/oq0Aa9MoW4FKLsEejXvYFjzn6d44uPddwjkcWnd0B2Z8Z8PU/ajS+ZYQY/RqQKRo72bjjPKmn92A19ULtPTFTSOsxxVmLTSSFbYqujt4hUd7BEcDlFcowfhdXtUQWYp1c0DV63UU+dkp8bmnaSCHoG+goyJJN43eqZwSiln2UzEGb+it/wSE3kgsy8q2X4pNgx67ZVUW1ZdRomsBIO0WoanuYoeCNXKRzwMj2mygocdlSer5ZmsnvqG8e+zt8j4iytYDRZ9AWu4euHPPYPbWozAUUbqzsAkogcqa29Bz0mEbr56Per+4806tmPrg+kheI/pBvqCv+HBMRM5ZEEO9FWkTKl2hvr6t6uTNuXFnlVkwspEJaocE+8JJ0E4WDW2mR997uvYYbohY/HPMUG6cK05SwghM9OhQmD8L1Ao="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "blue",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTYxNzkxNDYsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS80ZjE1NWRiMmIwZjE1YmIxMThjMmNjZjYyMWI5Y2JlNDBiZjQzODk4ZmZkODRhZjczMmMxNWYzZGNlNWM4In19fQ==",
                         "tXZ/NzLISCygr4aGFLVwW6g8lZdoPruN472pVGHepHU+e+spVjOoQQ/vXrIl2nO5EZe4yVsXYDGZK7UD8v3pNfjyXdwAdaRplgQy4B71dvpxoookgN6ytbkr3EV0WucsNCpJPVEAWN8P1DGYVU0lVWyqdphfmbqGaTQOtJonS95TIbfJvmropA86Uc3s6mCOGceb6+wu216IGOtQ1tnBI7wJJF6p3nYm2hXKPDz/ulZNUb6A17T532hfLNRk7tWaPsjzYnKdTFvpVzuVyulfUPz0cxfjQPAreU072/GxKxk2eTlK6qBCT4hOBa+jlnBUUuG8JIL1/HetF5e+svs4LcMzVh1ZSnPsu6ucEpN8VESDK6ErUSuxIm/f2FnaR8eHaqdJBd/1xaA2jAILNP/Y//4G72BdnMnFsv+rVptE+V+yWzg0Pvlv3I0FqGNc+fZWmP4pqjIUd2T7LjtztV7MyBDECg2ASXRhmaaldjKcZAjgaOyPjYkQ8ydFgPMrQB/xR4yiHnivguJWG9ReuwALI480ZKw5VM4evp6JhvYGBkgnrvC+AKGX+gAZhfAnIT+KdUXAJh3LYfy984e1OQQqNCOg+lHR1aPU1RbtSEN878gqYNbMVbZ7Q5fAEo7kz9V9uqmHSrqQ8w4ltUO9W4zbMYJDVVdVAWbzF915ohYpgp8="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "green",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTgzMjE5NTAsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jMGQzODkzMjYyMWI5NTIzZTlkODdjODcxMzEyNTk3ZTU0Y2QyMjRjODQ0NmY2NTE0ODY1ODE0Y2RlMzhhMTIifX19",
                         "huZ5VsNJVXyj1jijC2KE3rE/XbF47jfj/dApSKRqMbTmHQhi3AEFUAetgN0TsBJWaynz/bgADVTY84WsDeeZyW6u1FZHQtOyvq6zxVCw2L1tFrjO7Ts0AYXpNvaZawz+r9OuM01Y62z9oK4VwA7e9oFHDSuo4mExcTgd35cqyxJmqNA2k5xMh88BBiKumJNTenzTEqfQaaWesSmRJWnxZ09zZKhZb2E0m4ekymZPKZWPuxxfOenaFWlpyltLnx/2pC7VRkG1v+zoBe/VmfsEtu5qWPPS8UPtg1Fpx+Q3GtxIApGj0Ni/DiKkaOmOY/5HH9uYD4BtJ3NjXEFCWbkQOXEgLrgwdstRVL53opC3+07QZTbnXVNA2Ua76Gu6T8j+KMxpA0+q0nS+FQZCL2TEt2Pm9nsAZx43kvQ/iA3hnM1hZ64jSQ4nj38mUJ7bnmqM2bcZpQMtIDzwMwswMLh9/jpYFZBK9p5tG2TW91RjSne6R0sOyzZyfOBX/T8oNohBCSVokD4+8SGyBGzknUb1VE0YOZ5HOj3N7agGxhWyPB6DrYCUT8hljtezFO+iPBSBLVo2yuX1PMrrQYB9ir+rTc7mjOYWmL6ENrkSN52fBDCd4yLhPZyU0AP4ov+Nl175c32e5f8Ihhz7IRnVhNDzOE12WS55ynn1IofblMSgfPU="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "aqua",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTgzNDc3NjIsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS83YWQzYTk4NmU4N2E3ZDZjMzk5MTNjNmM5MmE1MmNkNTI0MmUyNmU2ZDc4NzRhYzVkYmFiMDdkODNiYzE4NCJ9fX0=",
                         "QwTBMrsbG4EGg5GnaYGyWy5S6G7UWJTTafe/22OMDEsmIy2mcaPzTRHdxQjeWPa8Zk5wGlp7ehZMbC262DRdDG5Wg7SKuAkxNdow/u8BhrUJg4Z9nQhfOauoN2tk/F1j+isV+xVi58EsEhhsr9h/1s9vxJKI2GBJJUmTjZ8xzYmcsihpoM4LaHKRu8sXWQ1MHa5QBgqzOy8UPRabFFNg/5GT8xo0UqM/5FlsYMdiIPsEdOi5bMPsU6ZTco/hWpqTMAlhDMw3hLUxvknnQ6Pf1Mi6GOqTSucaKggAyrj++p9LMtihwBOvRHhWUfIPTKdZ05JllS8Q6aZioOqVbsd+GLHYZp/PKtwKNC62rPzpqZMIBw3HgZ5ciQhSmDMr/l2dDUKEn/LIAJew9P+GXVEpPTAJSLy2IkcEKzrtU5ZSTmbZwzzldviK0+tPVCE3AzMcnYqoVbj4uOpo9Uo/uaunLWm8/PWcjRw3qy8c3czxC1xVynEDA5J6wjo8oqjSnEOuHuJ6cFLCYUf4QMlRmVIaA4lllAOOr+68QEHzek+DRc6rNgkUoqCcHF53YCfH7JItpSxxTZ6snFS2LI20KFUp93DibVEkxifkyQLbqB1OAcyDXkji8HJ7IKUMAUKoNFpLL5eANJsv/96P81N16rGA3THLe5iz17L5xVX/hpruKAo="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "red",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTgzNjk3OTUsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS84OGNiOTNlOTgwZjYyOTMxMzYwNGNkMzMzODEzOTRjNTA5ZjljMTIxOGRjMjYyM2Q2NTBlZmI4ZjNkMjAifX19",
                         "FqA2ErdpdSPLYrb+O0O1i5dxEr9ZD7ZhaeiSZmU8QSf6+yA8eGo+KZo0N7EHC6YFXnxkgySFqJYk7itcHQ5bLRKpKCaSKAXP4XX5a94/7x6lNa8ev82L+Er3A/mH/0cllxmngqLY5vK8Hej09NoMMNNAhtp+f07TkqLPCi3J6G4mFK4zHAId1gEIEyj7JxlTDeOeU0MRUE4bbngyt2h5VsGpitFaYWJZTSnl8XsXr+6/diXk1nM9smKmmwIv8C02Ufdw3N4/fB93qWfuDUmpd4RLck6XJpp8qJ95twQTmdlpEkUtTt258mHnCV/pjMY9T0J7R1MDbYajkfhDQ1xIdKpVZEsYroEVv4jNOedbRHccF5XZLG7QcYGUk22A53XT0/zuyIBfQbYk/XShABdIHoNW+PNscrtahAmqqGmxkxQqZdI7DdB6V4f5J2YpLkt6k/nXvV1uA+Gm2uPylPvvJusVJJD0Z+BroyM4SsXFfaN9oAqGmNFMdIWR+17vl9TZmfN+K3KodMeiSTcVNUFKVAtMFXSaz80UzmKAB1D+EsZQrJ/Qzo4+OP52TwMmlLOBUY3TvgZkJrK+2MC5kGnwJlW3atjR8JlsKTdNJx/xoCg8HRbaqdxQAfz7zYBRnYfFeuf9Uvb0G7RW33CO0ifqP0gi9HUoQH3LxAiJ0zNqh+o="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "light_purple",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTgzODM4OTUsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9lN2E3ZmY2M2RjZDU4NWM0YzZmNjM4OWI0ODZlMzBkNjg0MjE2NGZjNDRlOTQ2N2I4OWM0ZTFjZTZjMzg2OWY5In19fQ==",
                         "HMmoTUZECnTE/LoW4y4+yH7YENNOHqFdhYPFmULfFsEYjU/cY0eUu2LmlFcfjox0RTHqGebR0OmGnfVgim/p6n1RQtOXW0dt3GZKgrU10LPGRvEwQ6SMAB9/o5qKL+tnNDAtzbgrUJQh6kQGI7EU89h1KWeUpXmksPhnAPTvuXhFYEj467Ocg5Jz+CT1n8x4Gu0lXI8v8jHW+G/KP2JSQkLeLkqVRb8dGs9laFRvVwXQ3zLgTFgksgwGnuSlWTxoKVS//oLjwlZtiSowg1g+mQJJZxoH8esfAFGsxNKV+7JrdN13PfCkbdZYDpm5eom4SdrSflP3DXCBuGvBSFoStDYYegZEY5t7GhRizubZOU8ze3hfnbU8HqXZH4wqvmHzH7PhM6edQUrgJ+j9HV5jfpV9fQ9vhtlAFg9x1s9V8+yxpQ827FIqwyR4LY5cVZHyQCl1vkeCSuImrIUmYZ3ZsbQXzODDlzLEox++YDiEnUeuRCdJi4MInO9oKbZnZltEO4fsyWj7dRgQZQKWCR+iXaWiGsNmiiJiishn2+dEjFGg0L0pG6KE4XmkCJtDX2VvvgK3q4e9a0mZucZn68SjV3CcBghXkZ31pKzxxaQrKQoxs1KZFfG2UL7QDGmUURZxwWYzOo6KhI9eyAx41mujy8xlzarQzUErN4cwoFoPSmA="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "yellow",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTg0MDE0NzAsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8zYzY2ZDFmMDhkZmRmZTY2ZjljZDExYjA1MmY0YzM1YTdkMjk0MWZmMjNhOTRjY2UyM2Y3ZjgyMTg1NzcyZDgifX19",
                         "Rs2GuNrHjFBLk09ymZ/3UpTNSbbjmnZ3WvzA8n0X0gwzNHAx+8u/pNWO2uMEW1TZE5fhmrRAb8krfEpr/D5RdeXl+Se7NRch4mxpWqz4jiipMigFgGnf/s0JY+/dn5amGnoHKzqsktHFx3qwwOjGaz2jj1vhysuzQLGptnurn9wnRgVIueWfR2Cctc0v1pJ9jBVx/gkG3N+2Wznml+50pphxhcYBtfUKtwnMRxHIOz0me1KuRhqmBtmMzoQUArJXiz7cAX8cRlTqUg2ilY4UYLxNsH3cyaJi//tOzpk7EEwo2W1vYT/ZqiHTUvDBeRSu4Or9YZ7TwF/klbSnZJqaC2X0du00QcaoGAvFPY+A9HXZ3QII7k4g0M+aI3huiDUQX24O3p9h4J4dKJpktq1FH0G271uf5m3DMQlAQHTJWP07r3rL/23hAALMtIjE4SvUANd+WBxAeAlgSQamWk2YKQv/TxnNlr6tZMKOz/L1xsXJdn4eATWO786wH5IlxHKwgIQnmEYPSZX3AYsGtIsYuQhttbjmqYiecNdywXy6/WpZwhUHWW2aKuvkczJ8kX5Mcq+viVQRWRJNsCwqwzeXMLEX5tpNGOlQAyRJ/lyGUYJKmEXyqWXIxJstbJG09OR/G9V53ZhNa1hEaaVGv1FwZ9WdH1xHhGyJySz9JtrmKQ0="
                 )
         );
         DOT_SKINS.add(
-                new Skin(
+                new CachedSkin(
+                        "white",
                         "eyJ0aW1lc3RhbXAiOjE0NTI0MTg0MjUyNTQsInByb2ZpbGVJZCI6ImU4MjYwM2RmNDE3ZDRhOTViZDFmMTcyMDY0OGJlMGI0IiwicHJvZmlsZU5hbWUiOiJQYWJsZXRlMTIzNCIsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jMWViNWQ1MzExZjI1YjQ5MmEyMTIyYWM0YTNkYWUzZjNiMmRmNTc1NmFjYWM4ZjVjYjk2NWEyYjhjMGY4In19fQ==",
                         "LHeNKZWS3u7hmMmxqjEiCLAlhHRR4ZzQDZkCwJNid0odX38Qm98teyCwg4VmYKUrovIpqX3xReYiZ2LIY2SQDz6nARj6qarHQHDMgZ6Itqfd8jue5ZlzbwRwv9Fmirxdq67yA/VAMmy7Hel60X39PF/qVlVmA1k9nFz2NDmMlASA61nI2oEjfvdwRgODAG0rSkocIqxpZ8y/hUAsUsP2NPISIRl+yY+QLpzkx56+iTvLvYsYbhFMMJyjshjgL6j/TH9XRyjfqxfthTiKrH7zYSbxIb1nQC+Osrzg2EN9M2BPfyvF/MiFsQGu8It9CXSSR6ZFqTnDmhteFySiOrC8WF6F6rZL+vMYLSgke4vixLFLLdgdb1NBBMy8wGfEJFfLGs0n7UcnHERLg8ZTzz3yov6vKVd5dqv8uClQGHbv4iHVpvvepZ8BUuPH4PQgxqhs1akQ/q9B0RVXucigEcQMWfBAftGEDUI9PL17jjjsNbLYnX7yjSV3AWi3PPFVs7JWXrG+9KQPYHO1OuoA0ld3gA50+nSRXqcpDrvxRqo88MlqAv54Wc/I/lYOfpzx9BCgQsMz7n6wq22BsGLhNdbB+Usw/GB8s50KDZ91Zigc2REljgyoabzNBMHa/ACaPiBuFZ8ApBd84no+ipnpVJXnNcFxSH44AShuIcZaCdBlwbw="
                 )
         );
 
         MOB_SKINS.put(EntityType.PIG,
-                new Skin(
+                new CachedSkin(
+                        "pig",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1MzAwNDAsInByb2ZpbGVJZCI6IjhiNTcwNzhiZjFiZDQ1ZGY4M2M0ZDg4ZDE2NzY4ZmJlIiwicHJvZmlsZU5hbWUiOiJNSEZfUGlnIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS82MjE2NjhlZjdjYjc5ZGQ5YzIyY2UzZDFmM2Y0Y2I2ZTI1NTk4OTNiNmRmNGE0Njk1MTRlNjY3YzE2YWE0In19fQ==",
                         "CP9mhV9+RayouT8wKkH5NctgdqTbW/Lu5jURwZVCxSCGEDW3Np5t2v3V+aZMfTTdoSvIZXofw6wm6O2AV4QsHf6/y1RXPRanJS9k5C2hyWvCL6MFBHfe+bvA3Xnl5Og8QO4WrouIOfKL71fGyAoQHhtK6aOv42wm1dGcE1lRx7614q+3GQKZcg9od6kR5kSOOpPpIE11tlCQ/khRGeSF1IsvSIJ1a/90Uh7eT0A5VNdqb+e2vTcgQSTUKgnmMk2ktDDx8QURFo2VxszAXvtADx/RAHVPpW9/z4HWD0g+KNvxGKCH1qhTpuq64tZEH1rS8mjDxsmdIw0AcPV06xopNKG6FkWfayZq5zBoyrB/uM0fW0UayEN47kJG4JhCDG0O7wLg84BH5Lhl/AQReG8K/rVDLwhZxNH7OgJ4Udw1+mR+mDrQmDBEmWutDX2ECksgysnAYw7nvFoYVUUim0d6Monvn67670GUFvyXE7Azdvo2EAjgEwRFMbzpDvT7RPqUWLfJ3wEFmymlHnTAAqSo+5kyrhvQ/jD0CwFMIClmI+2TehmrUB+89bKP36yNbpJeAh4ThQMLkSMVdItaoLSYoPenJ7SbWxH6UopnQsv/oVPoKMBYhIuXqvdCT+ucAoljL9HGanM84St59Jt+Aof90dd8T0/eR3Za5HttS+p0a8E="
                 )
         );
         MOB_SKINS.put(EntityType.COW,
-                new Skin(
+                new CachedSkin(
+                        "cow",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1MzUxNTYsInByb2ZpbGVJZCI6ImYxNTliMjc0YzIyZTQzNDBiN2MxNTJhYmRlMTQ3NzEzIiwicHJvZmlsZU5hbWUiOiJNSEZfQ293Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81ZDZjNmVkYTk0MmY3ZjVmNzFjMzE2MWM3MzA2ZjRhZWQzMDdkODI4OTVmOWQyYjA3YWI0NTI1NzE4ZWRjNSJ9fX0=",
                         "VxbMhJHqh/g53VQJ83wdvuKv3b+sAaJ32VH49Dbc6TzY4WXoCJxytYMvVwE4YoZlPWsbHEtCst/NKZYGfK5SpkzMPRn445mKUcwL5Mq3hGaCIZTEtvjwFFT1XgVcTGCKOJ9GvLZjtv1SEeJuGWIRBCfKvqrpCh2rG67UKDBwiKW7YKnTQiMGX/aXmFcMLPCjEyfGbo0Dne2KgiLeNAoP+XCPOxuJD1yg4RCRCn89h4Up/BVw3IYUfqZgkRveGOMMn4DssQJ5Vkbs1xWQX+8TCaArs3nCFJfxczr7ToNJOOVYk3fckLd6J9xRUcojD0VatvwOG3LgadCTdlxCt26+5RoeoU7Y8vuWuPGSyvBwcVRtBK2E196rHcfGTNOQO3F+7xJB6ZIldVEtVpGBYeyqIAypa+O8WCPdfxdhspkT0tYcG4Kd3eo56dqlUWqTMl7e3SznFEY+k6vlx6/gfbeW8peut4cVG4uwDFK5ZHBdssI02kqib4W+h84W0KaZA4p9DaSvSRepC+GQd6Jo4vOLKqUk7mhM6YPTqE6gwjvCdoh7t9U2H/44dFlK8WQV+q0p3AKWGgaAH+cE+UfCTHsTlWebiuqW77B3VC133ROiB6MENBHudvHo8YmnWx2fDzhxyOBa6IBiKoC25CWyThkWtLRtlVFhKRZO/NIuJV3tKYs="
                 )
         );
         MOB_SKINS.put(EntityType.CHICKEN,
-                new Skin(
+                new CachedSkin(
+                        "chicken",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NDAzMzIsInByb2ZpbGVJZCI6IjkyZGVhZmE5NDMwNzQyZDliMDAzODg2MDE1OThkNmMwIiwicHJvZmlsZU5hbWUiOiJNSEZfQ2hpY2tlbiIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTYzODQ2OWE1OTljZWVmNzIwNzUzNzYwMzI0OGE5YWIxMWZmNTkxZmQzNzhiZWE0NzM1YjM0NmE3ZmFlODkzIn19fQ==",
                         "HMY/vx1/kn9UJMm7GWQqPikG5G8KcbVVYus5/ePrs8Jb2pLzb2oYkraHkH6fer/QRCntecq1eCJKKFGjRldYFY+0LyL9StgOZJz/FFjcNVY3I9XJYhqquVOgDmrMo2TnsJbDj5WqdYiC2kGlLIdXwxw6tHzuEBirsFhmhr4zQZi0QLs1fJ+Kehdbd/tJb9RkamgXRSS5ZhkBkGCHh6YU+GFBMdCqE25Q1GC3tfaMQdIPkV15eKDBugUg/18bUr00igLPPexrWNoI96UJdPdRaoKR+P1nmkKXgEy2QCtKfOJlR5ws7h7Xs3hxgExN51gHwcsh5c2VFelOzY63NGTAzJL0UnbzD9LEFS3vktk7Q7eOF0gtVV4BmIA+7yJnv7ZeoR83jS9Dr7MS6aKuYnKS5f9iXwq2/vd3PNg7D98qbEcnpwZFyATsHFTpNddRZVZTuqbdmdKtkr3PY8X6tXCrGXUCpa9G4DN/u/cmGyMF6h8O/sqXmWkO31/GeavpMRUOgqINusR84tEtB2sQgUKz6Yo39a00TgYyrwhtGUr4Ba2oFy474+kZpm+nL3g5awTipDaDG5Qv5pEbr53hWjrGzanMiBJlVlEWSpXkvpuDnlDUnTFJgs5QdTHHC/SmuKxiicfMov7IzB3G4anFXLyt5ugLJ47daLDC+4bvLiZ2ZQs="
                 )
         );
         MOB_SKINS.put(EntityType.WOLF,
-                new Skin(
+                new CachedSkin(
+                        "wolf",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NDU1MzYsInByb2ZpbGVJZCI6IjhkMmQxZDZkODAzNDRjODliZDg2ODA5YTMxZmQ1MTkzIiwicHJvZmlsZU5hbWUiOiJNSEZfV29sZiIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc2OGNiZDUyMWNiMTg1YjI3NjcyY2U0MzBmYzQ4NTBkNzU5NWM2ZTg3NzhlMDcyNzFjOTU3OWVkMWY1YWZiNSJ9fX0=",
                         "Wl6Tzi3mnBfoBdMt/RsZT0RciWpTfAKC0C9nivFKy4A+qtLf3qwne5e+YyrgJ3hqmk9O0tsrvgEkUR0kOXXIc3IefQ8E1+5Ucqswa7oBMA4NhIe8dRlhbCqe/T9pbU0rRFqnRNJMYCagxsE9ESZRx7u06LKa8+q7ZvmO7JxdSbYRhT3l752Fjaaue+3Jdysbvn0FDz8+qWycUAmuRMJAFSzaxY9LByEvBIr+Luu8j5YDUl6lRXA6r5XK5BLN7Okv2Lpo/yTgl1QcUKcy4LLFroYZE3+GGHo8wR0UNfje2RhY2SqKslXYncQd95Sbm2I/GP/fDefG1eSR2YQJxoyO7Azzm7WylKcUZERHqHx5ihKJlCKXLeqGZUdFbiW/cv05ejXZNKcDHAvwH0Xh9LaITaWlELCNSj3V4KRtROdrnhYGU+e/5VYRCVuqyvKsY8aNyboCz0eths2rpfySVxgL2Ey3DyiLSR7SxFY1/MXd0/YeEVztUCBCgAv8hX9MYeFX6mDEFWpYYqVR84aXRGyy8yJFRemu9ciOaMiK0oJjZlp+iIV9C+MUnzB6BxkwWdHKGzWbCbmbZJz/d/QHyVbMRUqiTeiTv//37lPx6TxNUUAn9A6OSsPBT535deogPdQTdcTNvz2NbPbCTlJ3z7Nv4ZYQqPITyg2YTaWnVI/DHQc="
                 )
         );
         MOB_SKINS.put(EntityType.OCELOT,
-                new Skin(
+                new CachedSkin(
+                        "ocelot",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NTA2NzcsInByb2ZpbGVJZCI6IjFiZWU5ZGY1NGY3MTQyYTJiZjUyZDk3OTcwZDNmZWEzIiwicHJvZmlsZU5hbWUiOiJNSEZfT2NlbG90Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81NjU3Y2Q1YzI5ODlmZjk3NTcwZmVjNGRkY2RjNjkyNmE2OGEzMzkzMjUwYzFiZTFmMGIxMTRhMWRiMSJ9fX0=",
                         "IOxTd/lKiOZ6WosQfZba8ky4GoSI90UnUlqGESR356QWzJUXsfQ/Mak7t3qVNDFSShLBzyoe5c0qMkoJqdP0csdtCjftVvYjg6fSrl8PYx8kqfzDmnYokEakoF0FVNm19LkGLBQCqknBA/Eys0AdgIKvmD9E/AjI/9+6tskhalJFgxBg8G0h/dlZML1i4JWlV33JQCNEK/rb8TEYgtAOlEtPJCAvpUmut30ynvCeINDQCSq01KZbQ5PLiVUot8m5OF619opf02tiDnHxZo8JJX+89be7xr27jy/s/QvTm409igP9KTm9GuEqzZ37Xp7LpCYe3VRivr4DARQX/sJu3bDwHvJCC8/wLtY4jhwu5M5ZUrTqS/7O1bydr62kDRExsLRXPZrLqCjFCvgqqY5MPxGiyghZ0JEQqOkrdtKM6MFDH6qWwUoUiD9pU7VxZ5zlXjb0ZnJf87zNZ5IXf3PvQlf4DKurkuKifU3/0Oaa05wjWX5+/+KVErlt9+OlyaZ30MdfMi2ue2xti67f7a89EB9eb0DWvPrf4NRUBwYO0fpSic7e47wQ65jVGMSxDD7PCzeLgxlCXlh2fwKqXkdlbC8g34SDlOL+hkAqYBLEPpJJBfuagBgyUzlb/U+Ef3GgyM/RCBlhYZaRfoygfp9qr/BuudirmhGo3KB05X/OVQo="
                 )
         );
         MOB_SKINS.put(EntityType.SHEEP,
-                new Skin(
+                new CachedSkin(
+                        "sheep",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NTU4NTUsInByb2ZpbGVJZCI6ImRmYWFkNTUxNGU3ZTQ1YTFhNmY3YzZmYzVlYzgyM2FjIiwicHJvZmlsZU5hbWUiOiJNSEZfU2hlZXAiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2YzMWY5Y2NjNmIzZTMyZWNmMTNiOGExMWFjMjljZDMzZDE4Yzk1ZmM3M2RiOGE2NmM1ZDY1N2NjYjhiZTcwIn19fQ==",
                         "LxktEVjpGulm0o7wPpZ5Pvx4jNGx7lDqzigrkpH36VSETgyXP2uuGAdpJOsGwHpyYXqzL2qAe3hWy/quNtuFSQ+GusE+7tJkY0msrC2hLRGr801kebRrpOhQ7pZifKMKsRD/ea748ltYlXLJQkZ2nTBKd69GmVZdnjyHthqy3rXsT7EUlESn2Ajyuh1F0L6tqrWyXo05WcAOzpiEGANgcKrrsemada8eVjYeBygOu8VTxJBEYhwOjQpLT+RqTde+vamMUn681kHJyfeOjj5w5/P4D2UjU1JJyhOQRg/nXdbRxt3EXoJgfT69oaenLUsAlg64WmH2xx5rR+4Ag5jPmZ1lniO61a4zUb49tdynXkvJxqZTYrE0KSuQg3RgMxgiwQn2Wl881JpI56sYpt9yo075a5Sx761e7c/GWh+fVOTiAtYtujB/nSyb8ud7uqVFWPZyunPM6g21A6vfHXS7DqSUIPnqVDTMJCMOLtCQcd7644fIU+99TCpKdohDbK0OdWV9RaHkOtNuPB0CQG4ic6kjY5wvRCZQFO2pPVC8SEFUocOAKBpCLlIhPBzsYQzSJ5vbuvnAo4GX6n5tNll2QWKiN2ciDSR2ZLqWByZQksOLJDcbCtUJB16v9VPK5T04UltotPRjSGEfeRYyLxDUeylK6e7NpNI736D+84T8CKE="
                 )
         );
         MOB_SKINS.put(EntityType.SQUID,
-                new Skin(
+                new CachedSkin(
+                        "squid",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NjEyNDcsInByb2ZpbGVJZCI6IjcyZTY0NjgzZTMxMzRjMzZhNDA4YzY2YjY0ZTk0YWY1IiwicHJvZmlsZU5hbWUiOiJNSEZfU3F1aWQiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzAxNDMzYmUyNDIzNjZhZjEyNmRhNDM0Yjg3MzVkZjFlYjViM2NiMmNlZGUzOTE0NTk3NGU5YzQ4MzYwN2JhYyJ9fX0=",
                         "xYGyUUZuPtG/BJooEL0kGfFtVlZWCrQ9NHtlMIfX4k7gq5MkhtdGl7DLo+CB9BgufwCuC+3DUih7xOuroNtAZesPZ5dF6BlAZXSohr7wiQE3o9sB8oHgVc5lAagjs/ef6xc8yRzLLB7Et6YUtWkIpie2i4na+CA1S4y6FAqmiJ7tgHXpoVBagI5XGc/fvV7RHKBG4v1P3bStEcGmzIZWZA0LM0azsb4jRwno0r+Pn8UIuCOEU5VZFZGIk5DtcAsDKRi5m2WwHHD/n+gpw50z/BtgXcjnJcqdAYezr7wbXti7ydJEx0mq/gqMttZzQAWgmoVg6GcbdhWAklilKtHPIlz6KHuYreXEciugAdfEdmSoT5QwXdAyBd1ftNluhe+tNEZPHAtyaCubpQwcHdvkCl+WWc8mE0W20+1XD2dHCpFdiJm7ZsW+WtdcwEnjyiq+eS2BppP+prgRE/15rQm7JjPGSlDhLvjtbicraCH1EedcObhaqs9vOd8dNMPP+ptw0D8FTcQiff49r677MciHc+WlZPssS71dGUx1qsq0+JnZ8qJPMbWCSgQTT1aFjxQSwZbTOwSdXN+hps/rFSnQ+K44kkGnXJNWRgf7dKIYnmGXI4a95naqhvVBPxLSW4EWbSnU7tfR8mJJpn+iEI39j2tOtA9UNz88HaqCSyioY+o="
                 )
         );
         MOB_SKINS.put(EntityType.VILLAGER,
-                new Skin(
+                new CachedSkin(
+                        "villager",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NjY2MDgsInByb2ZpbGVJZCI6ImJkNDgyNzM5NzY3YzQ1ZGNhMWY4YzMzYzQwNTMwOTUyIiwicHJvZmlsZU5hbWUiOiJNSEZfVmlsbGFnZXIiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzgyMmQ4ZTc1MWM4ZjJmZDRjODk0MmM0NGJkYjJmNWNhNGQ4YWU4ZTU3NWVkM2ViMzRjMThhODZlOTNiIn19fQ==",
                         "jk3tLB8b0dVjR8qdMkXAeVAgdPDMHmhiDcvDzpF55vQehvuVl2f+r8Mgqm/EyNtVzxH78rXiJjRbxdmh58kNRoLXY35+rBTUhZgiUAh5JTWEbUOHA7k8ZqF16+uRqiCgAXGX5ZzC49Lspye8CSrEhqXfQhiWDgmX1xkpaKRDRpsdciMKG9m6rmowPbYPf+QF/RuMHi5zY+4xvjMCFY3KKaHE37l+J6MPnrF9c5/o3/hWpCe+kUJ1vJ5z5Lz45jDUsVEtydVAzrdWW1lxlYxM3JZ2+aqNcMBA5cWts70ujxZ4bWgwgpaEeRCi0j9jjjigazCfu6GhueD4HfBvPzBcXFq4rzPumPm5je2CBvhSmwnTw/Hb9OsF5FWexNB3VvS1gJ4lNDtCkV9Fyz5Gs5tLUVatH2PVvrIW7Zm7TwU1SYeahPJCiCyURteH52IEDko3wQRQxOkrqJI8vn3ppzEmEGkcU7McDCuf7Ttsv2DlRHxO9nJVSqud8/lSinum8cndMJ4/ABO5Wq6T2aucf9zQ45ZcFJId8fEYeIoZ1nFXL8EhwUJS+s6y/ORb8HWqHZ5uR0New2A/saAv4mxVsz5z3d/MvXGm7LG6Ww2W/I0JW3Vj7RBoximz8ZMXEOIi9YJ8tX853IZUdjjyyCNlXiK5YUP4+5LAi8sHi9htX6xAZXo="
                 )
         );
         MOB_SKINS.put(EntityType.SLIME,
-                new Skin(
+                new CachedSkin(
+                        "slime",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NzE5NzYsInByb2ZpbGVJZCI6Ijg3MGFiYTkzNDBlODQ4YjM4OWM1MzJlY2UwMGQ2NjMwIiwicHJvZmlsZU5hbWUiOiJNSEZfU2xpbWUiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzE2YWQyMGZjMmQ1NzliZTI1MGQzZGI2NTljODMyZGEyYjQ3OGE3M2E2OThiN2VhMTBkMThjOTE2MmU0ZDliNSJ9fX0=",
                         "LQG9d8Ki2nDIOwj7AmpgM7pbTI9XRBpThvqnCnxW5Z6zgnGMtYBXkVoDkL0BRvImiZeY6SjSlTfR5uPtFpgc/+IRbzMhF0rn/BEpAVHIivCFKH4esYrsjJieAD2RV86AxaqZvA7WVG6opnmdjJKYrd8q8M0fI7QRXTQF5Ub03KTO2ajvBSgBHjKA60IdvvY2ulZAIDmvRe461yJ2EmHXKboW/hEyVU2+59O9R+/1aiv1LnfepP3/w0+vUAVptSkB6+Hg7aJdrFFQqIm4JlKtUyhFVjl5vjNjAdNp1mL6ZusYryHId6aarQxa1/8PeBGLEv2ntp9YAjXmvYLGEiz+6Rq4OC/51i9uEhIA8X3CnT2bmaupEGeQykQx9iCyypcGJzzQOvOiw6fCjIp4UxsmS17Dd3Xec578MjEvB5IzAPT8/OM+yDrXN6ediw0wAz++KECT9TZRZba4/wL17+HAVtELTfacTEmDOWYXZvvdGStbNab+VOK/okuNk1PPWIcq3KgryGvMeOZkj2xhrDpkhFXy4H/doBgR3kK2QwrxEyox9L7GclgACHjPFOj76GRJlS/IhT5xfGZ/++tZnEzeeG/dKoYGA5ll6RGJafkbqZlYPAGfPFfQ1leQyFOua4jOxDzCH/FO9ftR9yKEdOQeztTj8whv3Mn9hcX8w/C5v48="
                 )
         );
         MOB_SKINS.put(EntityType.MAGMA_CUBE,
-                new Skin(
+                new CachedSkin(
+                        "magma_cube",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NzczMzcsInByb2ZpbGVJZCI6IjA5NzJiZGQxNGI4NjQ5ZmI5ZWNjYTM1M2Y4NDkxYTUxIiwicHJvZmlsZU5hbWUiOiJNSEZfTGF2YVNsaW1lIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8zODk1N2Q1MDIzYzkzN2M0YzQxYWEyNDEyZDQzNDEwYmRhMjNjZjc5YTlmNmFiMzZiNzZmZWYyZDdjNDI5In19fQ==",
                         "Eg/5pglZg3aluXEzzdNOx8eg7A8dS7eZb7WfEtutHK4qG42WLB45nMq5ZsoZmFhWT4+aXcN8EFlDh36RGWCFYAWtP7Ct4HrDRANGfuFB8XzShX/bCGquLewRCeFbvvxdi9TnOh07xBOup1DgBVYr2ACHQ2SMH470JTYyvX7jO54LG2h0T6hmAnDeloOgFcXr3l3qxxo1vRP3nrsUYLkbMA5CdzJgQHxg+5yZMrLCtyIsA8A70WQPVaEWbF4fjocP2WmQZT9U9yZYA6NDr6e2uKDU+rp4rEeWCCt7cEbLPODT/QtLpoJMo3vFxGYQ0LCjF57oQRKZBpANDWNajfmk1aY2yjM1JA/bWK9DjuilvbgHcsW2ekEsvi1liztELT8TuToO8+wuz6McV7QQrWL8LPspQFkpTJ7aevbBR2zxQTg3R4HMRkMT3H71YdEbtUuc9zLS5jsc9/BiWoGVtRHo4v2Yu2s2vvN2PRSiYbnykxIDaa6Z8SPB/ezMgrTligwekHKUI9spxARZ3QQyewTEH55dni8/2OYHGqeXQ6ibYIT/e1eETAMIUjEJ81bu9/D8MzLqn+wodZ+kjnDsDRCb+zNMP1FZLqN9jYlsbuEX/ghQI8RZ7Tws7TMcKGXbKabww77lnfo8KhKaZnz0SlPFmnnQG2fDNZJB2ktsgpVBfvs="
                 )
         );
         MOB_SKINS.put(EntityType.CREEPER,
-                new Skin(
+                new CachedSkin(
+                        "creeper",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1ODI2OTgsInByb2ZpbGVJZCI6IjA1N2IxYzQ3MTMyMTQ4NjNhNmZlODg4N2Y5ZWMyNjVmIiwicHJvZmlsZU5hbWUiOiJNSEZfQ3JlZXBlciIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjk1ZWY4MzYzODlhZjk5MzE1OGFiYTI3ZmYzN2I2NTY3MTg1ZjdhNzIxY2E5MGZkZmViOTM3YTdjYjU3NDcifX19",
                         "SEmNuwrYq1BVE35AMiFtRvnrWSs3dvmFHa7HZS3wXfHM5Xi5Jv/1Dkjah5jIxATbkuTEYCiNmRuns/pzCOPVcB9mTEFkXnc30+/1UWhJ+l0xVM2X8u9iTBWDalRJVV7t8M2LekyH/v8g+pREjZvJoKD5rb0VVDAIbMr0S7EycPlns0tCwvuu4rlfr7cHAbycDSc87kcawJNhDM2fr2Od/3zBAjKlk1xmLcD7P087buqArJnSsLcn3v2HAccDgCJ9vdr0MpFeT9mvw34daVxv8JVtOYkf49fKKNOaC0gTRj1upLSINmhx5zP3EQGQk3/RvJSHxcBBbIvvat1e84+tNpP7z2PNmYvFBRgM+ovgKu4vLImFPBdNgcyANjOecBZZwVFkq1Lo5sz7upxAhuV1dS/hb/n7gDDYZDvKdvxqQpYYziSVJ5qjveoF7YSxSvteIP96H4xFaDc2DlGzEHT/pNCjSmgRGfw77/NgCwwiCHL23/STsY5OrT/VPbeY2jl4mPESs6nFwT4/yGkPI0qSG9K66zteMfwyAbbOY+ueuT8SZlM4AHBp4SWrx2gWKniq7ti/EczAkE8CJc3Pgoj5GCYkl+iZqtYclIMNk0otpyJ9tFF1Q9g6qubq9JRDPzOEZxYVSqJCRIRsaf2yBMKPh6vCso0kNSugunuyf+lCMDA="
                 )
         );
         MOB_SKINS.put(EntityType.ZOMBIE,
-                new Skin(
+                new CachedSkin(
+                        "zombie",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1ODgwODEsInByb2ZpbGVJZCI6ImRhY2EyYzNkNzE5YjQxZjViNjI0ZTQwMzllNmMwNGJkIiwicHJvZmlsZU5hbWUiOiJNSEZfWm9tYmllIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81NmZjODU0YmI4NGNmNGI3Njk3Mjk3OTczZTAyYjc5YmMxMDY5ODQ2MGI1MWE2MzljNjBlNWU0MTc3MzRlMTEifX19",
                         "OR1BY4LqqVpI2AnM4IePAG677M8DkVAeiknMqqrb8q0KYCAon6ylP5Zn78AJQZOzNi3Y/tPvdj/NS5vexfr9FuAwo2CPd49O1DFVgtljt/hNM/40hBk3tE/ZlNvbZpMwGWmwQdbhxZf+9wrlJpkaMPsT3y8ifbehv9C2RMlaaLQBjedMT5B8yDTT/pZwWqNZ4iPtUeDiI8VsvcMyawkjnD5kQsxB6GCrCx9vAPFRtsw5r4YAhIzPpFdrGnKXRmEuR//POE8KFlL72iMhoR7pmcglhYAUlSAfL4Y6Y9SKYP91BV54Oh0DuBybr7ifb3Bu1zN37xPYih88H6nyPuVwsfQ2f8YUHQvRMRHi3iLwUut5TIVf7FOQOdMbcZWNk9SaR0E2ha8+T1EDW2X4+DEEk6CsLPSHTx/jtR89AcZxvayqOu77oP5V+seBThcXlkzk2bo1H3AdGz6ynQVeQoSnjzChwYhNs7roJAzQ+C0ipMr+1ezT6rdX39vtOIcHsF4EX6mqR6Tob84lUeDjiHiBVAUeralRY6I5Rl7vsTk8GFkQ7rAFj0OG1XKIKH2EAW10EtePdI6wH4DNbc4py4VL5o0lh9EPFpr8AC3lHSzaKELrlp3GcOhhA5NhWrotW8xxXssnH8mpbw8KWe6evI3Us7Ng1qiwwHCC0Yc7n9MgZL0="
                 )
         );
         MOB_SKINS.put(EntityType.SKELETON,
-                new Skin(
+                new CachedSkin(
+                        "skeleton",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1OTM0NzIsInByb2ZpbGVJZCI6ImEzZjQyN2E4MThjNTQ5YzVhNGZiNjRjNmUwZTFlMGE4IiwicHJvZmlsZU5hbWUiOiJNSEZfU2tlbGV0b24iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzJlNWJlNmEzYzAxNTlkMmMxZjNiMWU0ZTFkODM4NGI2ZjdlYmFjOTkzZDU4YjEwYjlmODk4OWM3OGEyMzIifX19",
                         "Bp35CW338fS5VEHtpHE+ZQH0Jq4z4m2F9ReQ+HdpLL9PHVusaD4Orud9se3+HJTTeDCRSRdc1N8oTcRdA5/xdl2CrjjUcIxa8Sfg+ySJd02xut3t1p5qxFe+w2zRytLBAQzcB8zO2QXf+niPhddESAC1sZ5Ds7/9CXXV2kSVvk+h2Mry0PR5inxPVqppDOTyFgTWivk4GVGnjJ3DOpnLAiTx5eafx42NPaQFRSj2Ho+9JejBgNtJpb8pGSGByyLVWnnVZhmm1A7SVzI2Vf2YUgEN0LautHCy/HyOFCS3/y/oy5+HNb0TPLVBlYl3I/Di1xZfYVScmTrJM6QPgW+tR5v/p+EH7eHdo/OGLwKjKlsmbX+BO6UHVofVEdiQDtOhBzBplitJj77UCQW+gXsFVLN38hrIRjR3v9cNKbr9XAZ88dU70FrwatvKEbfIETUmrW5ZyS/AHJrL4QTipmpw/j/usFNvhV3+N+Q1Iq7gB+ZNWCTdYCjBg0M/0jlwXyqkpb6UN/GQHH2q0VppmGZixrarCnolD/NcwU78np157hU5OZkhjFqCaB3CDc0FjsT4gXhQL03DhhSJwnAFkel0VxZjD3VShx+WDa0wHw5lTq++WDmJuvZep5sV38bTws9l9Zl5rqX80qydYup8v0byk/gt3FhoQ9Bqkcp84G3RNxA="
                 )
         );
         MOB_SKINS.put(EntityType.SKELETON,
-                new Skin(
+                new CachedSkin(
+                        "skeleton",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1OTg4MDcsInByb2ZpbGVJZCI6IjdlZDU3MWE1OWZiODQxNmM4YjlkZmIyZjQ0NmFiNWIyIiwicHJvZmlsZU5hbWUiOiJNSEZfV1NrZWxldG9uIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8yMzNiNDFmYTc5Y2Q1M2EyMzBlMmRiOTQyODYzODQzMTgzYTcwNDA0NTMzYmJjMDFmYWI3NDQ3NjliY2IifX19",
                         "ot6zQO97qCDOSIPUhmtdnoQfT0aVWi9BESmu8/P/EtnuyCfyugDPMzSAbmmsc9Ae+fnBHnmz2YUZ5JAmI7d+6PFuiZYhoc8bYdOLbnO5Cr9j3WGSmq2hb0cvhhr4okktCbNKmEl3F2ZBgtIDebkykoRTj72vlqevmjIi98wxEbbgNk9W0ikJcGeoV2Ksi0MErz9q5xjr+kWuq+b8qeyyAKv6wNqwZtE94rXX5UoBvrRS4NVMjpyFTUnV6Fq9s2eHXpa8Jx9sqfkc9btVpEwVy/w1CUXCdqWpoOe1sPPcUiniu95woX2ODVsfAk1wgxTiLzpYEdir3iMPzBZLFrPY+7XrN06droZ6vGSrOTtXIew7j8MrJfrob2GBsEskDZ4oegfwuqn8d9pGlEe1WOLSaXwRzryQx15sQQqC/LhZETFF4hJyZ8AlbircEqxDEEst0K8HAWiT0cIQLKwiJxzpn8L4CPaxGpBt3CrmpFhRAiTZJNs+deFHqrQ+75uNZoAnKyvwN7eMSvfDDYY9mQLI9AERAeHw3cAA3hoTe352Q9MTrzdecwBnZZgA5ZbO3ICacKloxZpmrC4MKS5jRKY0Th6m5vbCtoUXZdmeoL3ndlFLodyrmASGTyKsZ1ntR99MsxXjhRTuO/6ZT3Bu6m6ZVjnBKP/86UFkKc2owyIFbxc="
                 )
         );
         MOB_SKINS.put(EntityType.WITHER,
-                new Skin(
+                new CachedSkin(
+                        "wither",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI2MDQxODMsInByb2ZpbGVJZCI6IjM5YWY2ODQ0NjgwOTRkMmY4YmE0N2U5MmQwODdiZTE4IiwicHJvZmlsZU5hbWUiOiJNSEZfV2l0aGVyIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jZGY3NGUzMjNlZDQxNDM2OTY1ZjVjNTdkZGYyODE1ZDUzMzJmZTk5OWU2OGZiYjlkNmNmNWM4YmQ0MTM5ZiJ9fX0=",
                         "aHJTgEmMWxswmbj9YAwa7kpn9AhaJylKGNGsEJYDHNrxy29cNqfAHE56NABifOMvshIpqbYXA3JbgHbAM5asQe73EsrVTTUXRVnwICPmKQEv5sIY6jAKlL3+vB5NmxE+7GqrArn+d/olzLByIwt3Vk+lnNYmwy/mTvxQ+qTu3PUYea+7iyHdpMFoATyO8EQmAdDTuw32LrfP5Vam+f/lnkzbIqMAJ6nlNgYpRi1zhLR5mbiFWMchwsyTCwoH/0EX6s/h4+LUcOJ3Bb+HsiWz+fKYpi+Ky6FD87g7E3tFxB3SmZAncpPzNoWoEsD2fegqDnXjUkhSISF7bMjkxacjG03eWlPUj4JzZjqq/vtdNS7RT9USt+3PNaF8rKb6CxMeUV4dCeG4ybkLgoXpWNUr/9mzuurFOP+tOn5IXi3v6THXLFXHJgsiWkb7lJ9e/b+XjmDz2TmWA5g5RxVw8vXT4D2l6SPjBwT+CnqZKEAq6a4PT8KYePPXhhd+tM7zXvURpXHSItKza7m7VAJfyuZVX2zxLSwHrYVE0tIkzmvVQdvFJw4Z7Lvzz5CBokgaFsVavJuASYToLu1lXrTDxEQvPTYCnS/5qrtWUJjBD+4LJjnSWdB3CiBowZOUqKP3itbyxUfYGNRaR1bwScq1+zTaDKoM7n11zAzciXkMEDpQsXc="
                 )
         );
         MOB_SKINS.put(EntityType.ENDERMAN,
-                new Skin(
+                new CachedSkin(
+                        "enderman",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI2MDk1NzAsInByb2ZpbGVJZCI6IjQwZmZiMzcyMTJmNjQ2NzhiM2YyMjE3NmJmNTZkZDRiIiwicHJvZmlsZU5hbWUiOiJNSEZfRW5kZXJtYW4iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzdhNTliYjBhN2EzMjk2NWIzZDkwZDhlYWZhODk5ZDE4MzVmNDI0NTA5ZWFkZDRlNmI3MDlhZGE1MGI5Y2YifX19",
                         "K3BjrmWkdzFkzd/1Ifux5NC9Qk36IEP9LlR/B6hs6tweyV0teY7BYC8WfcUYBMG7H7TrPVuTQrvsUsqsI4S4ZJPXWJLE0hbhKjUP/V1OE4pAV7Np7m1lvULeThxJzlJbPO8vRmJ6nQP2QqI2cJa/Lf4CaKQmFaGegZevX9aEY6eBVKfVOUkxscGNi6Pa5Gfc6IoWxRuCpIYoVu7jXTxx2NPjYxziDzi0+GdZDTZfbtIyKAd3dujCR409e4CECPrGh+3SWB1kEayp1WdDDWta/wWzTs/hNgYWYWrS+wuTT2IRkwK4eJk5c1qp6/vUREOqN5P2lyFuLgLa31UMnaLxh7uHyFned6IA4w9ZJlH36X7+MrPXb1RXUJc7YgCLE9RtaJVh5LiHNj3pBp72U1icFN1FfMqpaxM/WtuuU4k1iJzxr7F0Pbi8rrjqCBlyzxVqpQGRxAeO591gmL3Mmx8Jy/DsadzSNsWavxH09y2LAQZR/86tMu+HOGKFtBttuhjk1dAg5eJmjxX/NSJNVSNgW9lhR2oTd5r+R20fYAHnMm4DPKus9fR5K9qYcCUsvNK6rJJULj3TRJ0/muEaTajxGidTOKBa9oe/aVznQ9M8a8qnHbH/ewZDQDVBYAeyk1I70iQl4hIEoXhMDafk7NP0k7L4Tb8GE9KG5EL6MsjZP3s="
                 ));
         MOB_SKINS.put(EntityType.IRON_GOLEM,
-                new Skin(
+                new CachedSkin(
+                        "iron_golem",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI2MTQ5MjYsInByb2ZpbGVJZCI6Ijc1N2Y5MGIyMjM0NDRiOGQ4ZGFjODI0MjMyZTJjZWNlIiwicHJvZmlsZU5hbWUiOiJNSEZfR29sZW0iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzg5MDkxZDc5ZWEwZjU5ZWY3ZWY5NGQ3YmJhNmU1ZjE3ZjJmN2Q0NTcyYzQ0ZjkwZjc2YzQ4MTlhNzE0In19fQ==",
                         "Smgrh2iBssFVnQKHSQojBUyg6QM7/8Z4c2J2s6SmlZ1Yvt7byBdMGXqfYZWRvpKGI1wCaG3oiOVOTdh/pZDyqSGD2QpUI3+A3I8uUxUUVgB+92WA8zKaMQ/QKrCuJ540TIJsXVwnwEDwEDiKrPhvIfgaBim9GmJIq4ecUK+Auov2BN4HDQOFfb8YrM204kJSnKrCez5bI4xEprv1n09y0cnJJmb5JHZ9ny083KLcosQD3BqAgGX78viC94rVZjRCKICnfC6j7KumKro/gYPo2fHpc2UeeKGz6Z9Mva6niPP7guQ54LzsBkG/AVEAHyQgHoUgbvDYoFW7K003rTmOjpKl8eytO74dKlT5BWDQU93V6z9S5IPi6SDg7lR4ZdpoCEjhT3Dw75YpJK9XVgMsQfmrURotXXIOo+1XX0VeMeNpXyQAPNbiaCBYM9Q8zX6clZ73JpeqNJg5QrGT95t4u6ImshSS0L/OgaeBYM731oAS3Qk5o8EcRGeuKx0DsoLmjqwSrcPpZZ5w99wa86s6tCWRVc78OHSP976pIpUxTNxO7UAc7NKDf0DP3Z7GhAbqjJDx3csinMmb8iXKlk4ESAcAwzsd+9YGiZ9EOInhqh2DuaPbleXWaF0kQOhm914mihRooeSLoq/mXlH8H2KjTUR8QOLle+ckBp+tqKfoF4I="
                 )
         );
         MOB_SKINS.put(EntityType.BLAZE,
-                new Skin(
+                new CachedSkin(
+                        "blaze",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI2MjAyOTYsInByb2ZpbGVJZCI6IjRjMzhlZDExNTk2YTRmZDRhYjFkMjZmMzg2YzFjYmFjIiwicHJvZmlsZU5hbWUiOiJNSEZfQmxhemUiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2I3OGVmMmU0Y2YyYzQxYTJkMTRiZmRlOWNhZmYxMDIxOWY1YjFiZjViMzVhNDllYjUxYzY0Njc4ODJjYjVmMCJ9fX0=",
                         "RnEzoI9dE9xwAKekixMf24vtTvhLgrjKG0kj0kRHb8qUL3EiEj37vT/Z3jjH0CZ+Hn48wI6ilXz/JSJaH+AmLEcPyiYd/2S/k4Hlk0QEt6E7wWIK36a6cLF+uKUQs/rFoSWRIYXyYX+oQ2TJvylzMWVsJGxq8u3JbjmK6rMLkyzs9ZdXr2CCEMEBLNYZdTfKUyT7EDUAfT61RftLidINHAawCXDZ2+K2Hc7VHTbmbLCHqZ8XWyv6tUY2sA2qfm2W2NbyAtd7/fcThIIhv2yabGs1vU8JDUrwA/fX7PK9iKPu05BSPrHNwSkqcUFXxkt88K6nOeDAnFYb9jzoU1vm6kXX0n8/yrRxJ3npjOs/YQmR7Ed1fBvT/og/tvcD2DiuyptN4w4fzwzQeqenrnIHt7Na/1VI+3gd+5u1mv6tny4qg+BmFBHU3nGlKT5dmbRzpr7MKek2SkBmkw8K9r5cqHDSQeh6Pnc60gtuIsOKbHsmgFezRmqlI7d9vv4kqMAGMYqTub+/t8LOwSmjD8+pWfkhfCqB8tQ+wqaMqTQh91fFMW0+pdfNksIjvJLJ5ZMSaL2m4WuZoxf2ZskZzXYixLCp69tsh2yiPl3vn13onO+kiQGO0R6pc3YPmalPQjF6Qa2hvowLMpiqB2tzLbj8lfqNEZFBb1VOn8vImiZbJZI="
                 )
         );
         MOB_SKINS.put(EntityType.GHAST,
-                new Skin(
+                new CachedSkin(
+                        "ghast",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI2MzExNTAsInByb2ZpbGVJZCI6IjA2MzA4NWE2Nzk3ZjQ3ODViZTFhMjFjZDc1ODBmNzUyIiwicHJvZmlsZU5hbWUiOiJNSEZfR2hhc3QiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzhiNmE3MjEzOGQ2OWZiYmQyZmVhM2ZhMjUxY2FiZDg3MTUyZTRmMWM5N2U1Zjk4NmJmNjg1NTcxZGIzY2MwIn19fQ==",
                         "Jna4wrXN45Ga9YwVOTb5M778l1PXRW+ILNk2EZZeVklW7qDj6uLflB6lrffqYhOxzC3igM5Ad9ug8A/Ngiz0hGy9oyXN5QVFaQTZEcqkNCyhYSjEHE2g41Q+/ign2y3knDQETRrRjeykpHUgj9YnYjR3jFg2i9QF9fWpFRoDlzpv4qkKtr08lbvFQqpztFMuJG9Yvs28AM3qka11pkwXIOWN+U8SGhaFTz4lzKTsnuon2YDvFE9/Db06OtBZlTst9Mh6qQb937v5gJ4ni13JHm9fKXW2q4USwSoDKc45bixjr75JUm10m7b9LKaVEFvqEwmwoLEPt+U8QDhSTNnzmata4YxoqVhvl+QX+rODkmvIT2sslYPHVCdCr2QMr/M43dRmFR9/PIhenMD/GYSPsZDnGUF8zI3A9Wj2kvUCUL9D2qmthQ7trIfvA74QSbfL5Z6uwiIztGSVtVBXxOxhhKPk59sfkU+8qk1Fgq5RysLKOnb4lWYUWv5A+jSNVbq6aiPPYQyzogMJUgc6IYq45klbgB6vlVvB6CvMFVtElEPcP+anMw5WRzK1MFmtE3rFwiGIXxeJ52RXUxylb1/MoG1Ix1kZbTDZ/QP8SqYnpeNukwwQdc5rfQ0N5qC3w3qurfmDk7rPPqyYNCEa7G8A+Hye6oUNlL5DPJ553UHJZck="
                 )
         );
         MOB_SKINS.put(EntityType.SNOWMAN,
-                new Skin(
+                new CachedSkin(
+                        "snowman",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTQ1MzA2OTMsInByb2ZpbGVJZCI6IjUzZjE3NTM0NTBhOTQ1NjE4YWZhMjk4ODNiODRhMWNjIiwicHJvZmlsZU5hbWUiOiJTbm93bWFuXzciLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzhlOGQyMDZmNjFlNmRlOGE3OWQwY2IwYmNkOThhY2VkNDY0Y2JmZWZjOTIxYjQxNjBhMjUyODIxNjMxMTJhIn19fQ==",
                         "Y1ujadK6OTRrm6WleyL0Dujj2qoBFZKAshem2gKRbwBjUQOWZ6jhlKzl9z7t1L/nKCAdjyFFxHdLOIlqh41l+v/8HxnQsyIl4mEzYQsN77s2uBE4pUGq+UH6hhTMKNIvqDkOruvDuRBe31k9Q731MP7zq/MUBeYT9OTQqf6eRvh+liwC6uxPW1UWDK5TQzjAYXZl/wdFUcbGL4x5/u5S6WcA5syV8SiJ9NAdrn9YBX6B4rHpByrOcMz9jeTKs5kGdc30NiLTkiYSOo97oxqCKCqdSdN/KPUqx6kcgYeWW2mxzFVjnPGMdTqEGM9N0doHuPn+W2YFwp8yywx5h3ZqWgQwKAMmpHwJKAvYvI+B8vu6E/cbzCn6H+LsqHbtBFnyQXxtH11ePxUdHCLcGwvWiI/3rURnD5F8Dz3ZYpJNCKaa4dg6UQm0Rs5nwvOrwJ5VxusZv9kIHEYEAM4NuwE/NHtpBhBQc7t665x5XLOfIdaU77OwwXlVNfvCRq3QqRkA4AzyqfIxnFpQ/SQR96vfa9OMHm05ktnxOq8pMAAY2FKF/Saqn2FM94FxjZ4NXHFW+rfkk4fMyjund/NUfuGoEOThVCVGIfpjUWbQtp4h+vxk5Qo38DqiYVqWRhT6eWHcKOxxZngY4JbzF07f/jh3tSgq1tI0WKz79J+slHS5Yx4="
                 )
@@ -297,7 +333,7 @@ public class Skin {
      * @param type the entity type
      * @return A skin instance
      */
-    public static Skin getMob(EntityType type) {
+    public CachedSkin getMob(EntityType type) {
         return getMob(type, 0);
     }
 
@@ -308,10 +344,10 @@ public class Skin {
      * @param alternateForm Used if multiple versions of this mob exist (wither skeleton = 1, ender guardian = 1)
      * @return A skin instance
      */
-    public static Skin getMob(EntityType type, int alternateForm) {
-        List<Skin> skins = MOB_SKINS.get(type);
+    public CachedSkin getMob(EntityType type, int alternateForm) {
+        List<CachedSkin> skins = MOB_SKINS.get(type);
 
-        if (skins == null || skins.size() == 0) {
+        if (skins.isEmpty()) {
             return (DEFAULT_SKIN);
         }
 
@@ -328,7 +364,7 @@ public class Skin {
      * @param color the color
      * @return A skin instance
      */
-    public static Skin getDot(ChatColor color) {
+    public CachedSkin getDot(ChatColor color) {
         return (DOT_SKINS.get(color.ordinal()));
     }
 
@@ -338,35 +374,16 @@ public class Skin {
      * @param player the player
      * @return A skin instance
      */
-    public static Skin getPlayer(Player player) {
-        if (skinMap.containsKey(player.getUniqueId())) {
-            return skinMap.get(player.getUniqueId());
-        }
-
+    public CachedSkin getPlayer(Player player) {
         try {
-            SkinCache cache = TablistHandler.getInstance().getSkinCache();
-            CachedSkin cachedSkin = cache.getSkin(player);
-            if (cachedSkin == SkinCache.DEFAULT) return DEFAULT_SKIN;
+            SkinAPI skinAPI = TablistHandler.getInstance().getSkinAPI();
+            CachedSkin cachedSkin = skinAPI.getSkin(player.getName());
+            if (cachedSkin == SkinAPI.DEFAULT) return DEFAULT_SKIN;
 
-            Skin skin = new Skin(cachedSkin.getValue(), cachedSkin.getSignature());
-            skinMap.put(player.getUniqueId(), skin);
-            return skin;
+            return cachedSkin;
 
         } catch (Exception e) {
             return (DEFAULT_SKIN);
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Skin)) return false;
-
-        Skin skin = (Skin) o;
-        return skin.getSignature().equals(this.signature) && skin.getValue().equals(this.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.signature.hashCode() + this.value.hashCode();
     }
 }

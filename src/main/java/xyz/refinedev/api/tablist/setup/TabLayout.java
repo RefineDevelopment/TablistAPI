@@ -13,14 +13,19 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPl
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoRemove;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerListHeaderAndFooter;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+
+import xyz.refinedev.api.skin.CachedSkin;
 import xyz.refinedev.api.tablist.TablistHandler;
 import xyz.refinedev.api.tablist.adapter.TabAdapter;
 import xyz.refinedev.api.tablist.util.PacketUtils;
@@ -292,9 +297,9 @@ public class TabLayout {
      * @param index {@link Integer Entry index}
      * @param text  {@link String Entry Text}
      * @param ping  {@link Integer Latency}
-     * @param skin  {@link Skin Entry Skin}
+     * @param skin  {@link CachedSkin Entry Skin}
      */
-    public void update(int index, String text, int ping, Skin skin) {
+    public void update(int index, String text, int ping, CachedSkin skin) {
         text = StringUtils.color(text);
         String[] splitString = StringUtils.split(text);
 
@@ -344,7 +349,7 @@ public class TabLayout {
 
             if (changed || !teamExists) {
                 bukkitTeam.setPrefix(prefix);
-                bukkitTeam.setSuffix(suffix.length() > 0 ? suffix : "");
+                bukkitTeam.setSuffix(!suffix.isEmpty() ? suffix : "");
             }
             this.updatePing(entry, ping);
 
@@ -356,7 +361,7 @@ public class TabLayout {
             this.updatePing(entry, ping);
 
             if (!updated && (changed || this.isFirstJoin)) {
-                this.updateDisplayName(entry, text.length() == 0 ?  this.getTeamAt(index) : text);
+                this.updateDisplayName(entry, text.isEmpty() ?  this.getTeamAt(index) : text);
 
                 if (this.isFirstJoin) {
                     this.isFirstJoin = false;
@@ -402,9 +407,9 @@ public class TabLayout {
      * Update the {@link TabEntry}'s Skin
      *
      * @param info {@link TabEntryInfo info}
-     * @param skin {@link Skin skin}
+     * @param skin {@link CachedSkin skin}
      */
-    private boolean updateSkin(TabEntryInfo info, Skin skin, String text) {
+    private boolean updateSkin(TabEntryInfo info, CachedSkin skin, String text) {
         PacketEventsAPI<?> packetEvents = TablistHandler.getInstance().getPacketEvents();
         ServerManager serverManager = packetEvents.getServerManager();
         boolean isServerNew = serverManager.getVersion().isNewerThanOrEquals(ServerVersion.V_1_19_3);
@@ -414,7 +419,7 @@ public class TabLayout {
         }
 
         // Only send if changed
-        Skin lastSkin = info.getSkin();
+        CachedSkin lastSkin = info.getSkin();
         if (skin.equals(lastSkin)) {
             return false;
         }
@@ -499,7 +504,7 @@ public class TabLayout {
      * @return      {@link UserProfile Profile}
      */
     private UserProfile generateProfile(int index) {
-        Skin defaultSkin = Skin.DEFAULT_SKIN;
+        CachedSkin defaultSkin = Skin.DEFAULT_SKIN;
 
         UserProfile gameProfile = new UserProfile(UUID.randomUUID(), getTeamAt(index));
         TextureProperty textureProperty = new TextureProperty("textures", defaultSkin.getValue(), defaultSkin.getSignature());

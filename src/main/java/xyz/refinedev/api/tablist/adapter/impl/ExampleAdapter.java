@@ -2,6 +2,7 @@ package xyz.refinedev.api.tablist.adapter.impl;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.entity.Player;
+import xyz.refinedev.api.skin.CachedSkin;
 import xyz.refinedev.api.tablist.adapter.TabAdapter;
 import xyz.refinedev.api.tablist.setup.TabEntry;
 import xyz.refinedev.api.tablist.util.Skin;
@@ -54,7 +55,7 @@ public class ExampleAdapter implements TabAdapter {
 
         for ( int i = 0; i < 4; i++ ) {
             int ping = StringUtils.MINOR_VERSION > 12 ? player.getPing() : 69;
-            Skin skin = player.isSprinting() ? Skin.getPlayer(player) : Skin.YOUTUBE_SKIN;
+            CachedSkin skin = player.isSprinting() ? Skin.getPlayer(player) : Skin.YOUTUBE_SKIN;
             TabEntry tabEntry = new TabEntry(i, 0, "&#FF0000Sprinting " + player.isSprinting() + "(" + i + ")", ping, skin);
             entries.add(tabEntry);
         }

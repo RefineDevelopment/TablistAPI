@@ -45,7 +45,6 @@ public class TabListener implements Listener {
             team.unregister();
         }
 
-        this.instance.getSkinCache().removeCache(player);
         this.instance.getLayoutMapping().remove(player.getUniqueId());
     }
 }
