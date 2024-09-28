@@ -13,3 +13,5 @@ dependency-reduced-pom.xml
 
 # JRebel
 rebel.xml
+/.mvn/maven.config
+/.mvn/settings.xml
