@@ -98,6 +98,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.cryptomorin</groupId>
+            <artifactId>XSeries</artifactId>
+            <version>11.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>xyz.refinedev.api</groupId>
             <artifactId>SkinAPI</artifactId>
             <version>1.0</version>

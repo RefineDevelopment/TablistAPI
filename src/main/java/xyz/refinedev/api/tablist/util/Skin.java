@@ -1,5 +1,6 @@
 package xyz.refinedev.api.tablist.util;
 
+import com.cryptomorin.xseries.XEntityType;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 
@@ -17,9 +18,6 @@ import xyz.refinedev.api.tablist.TablistHandler;
 
 import java.util.List;
 
-/**
- * @author Elb1to
- */
 @Getter @Setter
 @UtilityClass
 public class Skin {
@@ -186,139 +184,139 @@ public class Skin {
                 )
         );
 
-        MOB_SKINS.put(EntityType.PIG,
+        MOB_SKINS.put(XEntityType.PIG.get(),
                 new CachedSkin(
                         "pig",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1MzAwNDAsInByb2ZpbGVJZCI6IjhiNTcwNzhiZjFiZDQ1ZGY4M2M0ZDg4ZDE2NzY4ZmJlIiwicHJvZmlsZU5hbWUiOiJNSEZfUGlnIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS82MjE2NjhlZjdjYjc5ZGQ5YzIyY2UzZDFmM2Y0Y2I2ZTI1NTk4OTNiNmRmNGE0Njk1MTRlNjY3YzE2YWE0In19fQ==",
                         "CP9mhV9+RayouT8wKkH5NctgdqTbW/Lu5jURwZVCxSCGEDW3Np5t2v3V+aZMfTTdoSvIZXofw6wm6O2AV4QsHf6/y1RXPRanJS9k5C2hyWvCL6MFBHfe+bvA3Xnl5Og8QO4WrouIOfKL71fGyAoQHhtK6aOv42wm1dGcE1lRx7614q+3GQKZcg9od6kR5kSOOpPpIE11tlCQ/khRGeSF1IsvSIJ1a/90Uh7eT0A5VNdqb+e2vTcgQSTUKgnmMk2ktDDx8QURFo2VxszAXvtADx/RAHVPpW9/z4HWD0g+KNvxGKCH1qhTpuq64tZEH1rS8mjDxsmdIw0AcPV06xopNKG6FkWfayZq5zBoyrB/uM0fW0UayEN47kJG4JhCDG0O7wLg84BH5Lhl/AQReG8K/rVDLwhZxNH7OgJ4Udw1+mR+mDrQmDBEmWutDX2ECksgysnAYw7nvFoYVUUim0d6Monvn67670GUFvyXE7Azdvo2EAjgEwRFMbzpDvT7RPqUWLfJ3wEFmymlHnTAAqSo+5kyrhvQ/jD0CwFMIClmI+2TehmrUB+89bKP36yNbpJeAh4ThQMLkSMVdItaoLSYoPenJ7SbWxH6UopnQsv/oVPoKMBYhIuXqvdCT+ucAoljL9HGanM84St59Jt+Aof90dd8T0/eR3Za5HttS+p0a8E="
                 )
         );
-        MOB_SKINS.put(EntityType.COW,
+        MOB_SKINS.put(XEntityType.COW.get(),
                 new CachedSkin(
                         "cow",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1MzUxNTYsInByb2ZpbGVJZCI6ImYxNTliMjc0YzIyZTQzNDBiN2MxNTJhYmRlMTQ3NzEzIiwicHJvZmlsZU5hbWUiOiJNSEZfQ293Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81ZDZjNmVkYTk0MmY3ZjVmNzFjMzE2MWM3MzA2ZjRhZWQzMDdkODI4OTVmOWQyYjA3YWI0NTI1NzE4ZWRjNSJ9fX0=",
                         "VxbMhJHqh/g53VQJ83wdvuKv3b+sAaJ32VH49Dbc6TzY4WXoCJxytYMvVwE4YoZlPWsbHEtCst/NKZYGfK5SpkzMPRn445mKUcwL5Mq3hGaCIZTEtvjwFFT1XgVcTGCKOJ9GvLZjtv1SEeJuGWIRBCfKvqrpCh2rG67UKDBwiKW7YKnTQiMGX/aXmFcMLPCjEyfGbo0Dne2KgiLeNAoP+XCPOxuJD1yg4RCRCn89h4Up/BVw3IYUfqZgkRveGOMMn4DssQJ5Vkbs1xWQX+8TCaArs3nCFJfxczr7ToNJOOVYk3fckLd6J9xRUcojD0VatvwOG3LgadCTdlxCt26+5RoeoU7Y8vuWuPGSyvBwcVRtBK2E196rHcfGTNOQO3F+7xJB6ZIldVEtVpGBYeyqIAypa+O8WCPdfxdhspkT0tYcG4Kd3eo56dqlUWqTMl7e3SznFEY+k6vlx6/gfbeW8peut4cVG4uwDFK5ZHBdssI02kqib4W+h84W0KaZA4p9DaSvSRepC+GQd6Jo4vOLKqUk7mhM6YPTqE6gwjvCdoh7t9U2H/44dFlK8WQV+q0p3AKWGgaAH+cE+UfCTHsTlWebiuqW77B3VC133ROiB6MENBHudvHo8YmnWx2fDzhxyOBa6IBiKoC25CWyThkWtLRtlVFhKRZO/NIuJV3tKYs="
                 )
         );
-        MOB_SKINS.put(EntityType.CHICKEN,
+        MOB_SKINS.put(XEntityType.CHICKEN.get(),
                 new CachedSkin(
                         "chicken",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NDAzMzIsInByb2ZpbGVJZCI6IjkyZGVhZmE5NDMwNzQyZDliMDAzODg2MDE1OThkNmMwIiwicHJvZmlsZU5hbWUiOiJNSEZfQ2hpY2tlbiIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTYzODQ2OWE1OTljZWVmNzIwNzUzNzYwMzI0OGE5YWIxMWZmNTkxZmQzNzhiZWE0NzM1YjM0NmE3ZmFlODkzIn19fQ==",
                         "HMY/vx1/kn9UJMm7GWQqPikG5G8KcbVVYus5/ePrs8Jb2pLzb2oYkraHkH6fer/QRCntecq1eCJKKFGjRldYFY+0LyL9StgOZJz/FFjcNVY3I9XJYhqquVOgDmrMo2TnsJbDj5WqdYiC2kGlLIdXwxw6tHzuEBirsFhmhr4zQZi0QLs1fJ+Kehdbd/tJb9RkamgXRSS5ZhkBkGCHh6YU+GFBMdCqE25Q1GC3tfaMQdIPkV15eKDBugUg/18bUr00igLPPexrWNoI96UJdPdRaoKR+P1nmkKXgEy2QCtKfOJlR5ws7h7Xs3hxgExN51gHwcsh5c2VFelOzY63NGTAzJL0UnbzD9LEFS3vktk7Q7eOF0gtVV4BmIA+7yJnv7ZeoR83jS9Dr7MS6aKuYnKS5f9iXwq2/vd3PNg7D98qbEcnpwZFyATsHFTpNddRZVZTuqbdmdKtkr3PY8X6tXCrGXUCpa9G4DN/u/cmGyMF6h8O/sqXmWkO31/GeavpMRUOgqINusR84tEtB2sQgUKz6Yo39a00TgYyrwhtGUr4Ba2oFy474+kZpm+nL3g5awTipDaDG5Qv5pEbr53hWjrGzanMiBJlVlEWSpXkvpuDnlDUnTFJgs5QdTHHC/SmuKxiicfMov7IzB3G4anFXLyt5ugLJ47daLDC+4bvLiZ2ZQs="
                 )
         );
-        MOB_SKINS.put(EntityType.WOLF,
+        MOB_SKINS.put(XEntityType.WOLF.get(),
                 new CachedSkin(
                         "wolf",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NDU1MzYsInByb2ZpbGVJZCI6IjhkMmQxZDZkODAzNDRjODliZDg2ODA5YTMxZmQ1MTkzIiwicHJvZmlsZU5hbWUiOiJNSEZfV29sZiIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc2OGNiZDUyMWNiMTg1YjI3NjcyY2U0MzBmYzQ4NTBkNzU5NWM2ZTg3NzhlMDcyNzFjOTU3OWVkMWY1YWZiNSJ9fX0=",
                         "Wl6Tzi3mnBfoBdMt/RsZT0RciWpTfAKC0C9nivFKy4A+qtLf3qwne5e+YyrgJ3hqmk9O0tsrvgEkUR0kOXXIc3IefQ8E1+5Ucqswa7oBMA4NhIe8dRlhbCqe/T9pbU0rRFqnRNJMYCagxsE9ESZRx7u06LKa8+q7ZvmO7JxdSbYRhT3l752Fjaaue+3Jdysbvn0FDz8+qWycUAmuRMJAFSzaxY9LByEvBIr+Luu8j5YDUl6lRXA6r5XK5BLN7Okv2Lpo/yTgl1QcUKcy4LLFroYZE3+GGHo8wR0UNfje2RhY2SqKslXYncQd95Sbm2I/GP/fDefG1eSR2YQJxoyO7Azzm7WylKcUZERHqHx5ihKJlCKXLeqGZUdFbiW/cv05ejXZNKcDHAvwH0Xh9LaITaWlELCNSj3V4KRtROdrnhYGU+e/5VYRCVuqyvKsY8aNyboCz0eths2rpfySVxgL2Ey3DyiLSR7SxFY1/MXd0/YeEVztUCBCgAv8hX9MYeFX6mDEFWpYYqVR84aXRGyy8yJFRemu9ciOaMiK0oJjZlp+iIV9C+MUnzB6BxkwWdHKGzWbCbmbZJz/d/QHyVbMRUqiTeiTv//37lPx6TxNUUAn9A6OSsPBT535deogPdQTdcTNvz2NbPbCTlJ3z7Nv4ZYQqPITyg2YTaWnVI/DHQc="
                 )
         );
-        MOB_SKINS.put(EntityType.OCELOT,
+        MOB_SKINS.put(XEntityType.OCELOT.get(),
                 new CachedSkin(
                         "ocelot",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NTA2NzcsInByb2ZpbGVJZCI6IjFiZWU5ZGY1NGY3MTQyYTJiZjUyZDk3OTcwZDNmZWEzIiwicHJvZmlsZU5hbWUiOiJNSEZfT2NlbG90Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81NjU3Y2Q1YzI5ODlmZjk3NTcwZmVjNGRkY2RjNjkyNmE2OGEzMzkzMjUwYzFiZTFmMGIxMTRhMWRiMSJ9fX0=",
                         "IOxTd/lKiOZ6WosQfZba8ky4GoSI90UnUlqGESR356QWzJUXsfQ/Mak7t3qVNDFSShLBzyoe5c0qMkoJqdP0csdtCjftVvYjg6fSrl8PYx8kqfzDmnYokEakoF0FVNm19LkGLBQCqknBA/Eys0AdgIKvmD9E/AjI/9+6tskhalJFgxBg8G0h/dlZML1i4JWlV33JQCNEK/rb8TEYgtAOlEtPJCAvpUmut30ynvCeINDQCSq01KZbQ5PLiVUot8m5OF619opf02tiDnHxZo8JJX+89be7xr27jy/s/QvTm409igP9KTm9GuEqzZ37Xp7LpCYe3VRivr4DARQX/sJu3bDwHvJCC8/wLtY4jhwu5M5ZUrTqS/7O1bydr62kDRExsLRXPZrLqCjFCvgqqY5MPxGiyghZ0JEQqOkrdtKM6MFDH6qWwUoUiD9pU7VxZ5zlXjb0ZnJf87zNZ5IXf3PvQlf4DKurkuKifU3/0Oaa05wjWX5+/+KVErlt9+OlyaZ30MdfMi2ue2xti67f7a89EB9eb0DWvPrf4NRUBwYO0fpSic7e47wQ65jVGMSxDD7PCzeLgxlCXlh2fwKqXkdlbC8g34SDlOL+hkAqYBLEPpJJBfuagBgyUzlb/U+Ef3GgyM/RCBlhYZaRfoygfp9qr/BuudirmhGo3KB05X/OVQo="
                 )
         );
-        MOB_SKINS.put(EntityType.SHEEP,
+        MOB_SKINS.put(XEntityType.SHEEP.get(),
                 new CachedSkin(
                         "sheep",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NTU4NTUsInByb2ZpbGVJZCI6ImRmYWFkNTUxNGU3ZTQ1YTFhNmY3YzZmYzVlYzgyM2FjIiwicHJvZmlsZU5hbWUiOiJNSEZfU2hlZXAiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2YzMWY5Y2NjNmIzZTMyZWNmMTNiOGExMWFjMjljZDMzZDE4Yzk1ZmM3M2RiOGE2NmM1ZDY1N2NjYjhiZTcwIn19fQ==",
                         "LxktEVjpGulm0o7wPpZ5Pvx4jNGx7lDqzigrkpH36VSETgyXP2uuGAdpJOsGwHpyYXqzL2qAe3hWy/quNtuFSQ+GusE+7tJkY0msrC2hLRGr801kebRrpOhQ7pZifKMKsRD/ea748ltYlXLJQkZ2nTBKd69GmVZdnjyHthqy3rXsT7EUlESn2Ajyuh1F0L6tqrWyXo05WcAOzpiEGANgcKrrsemada8eVjYeBygOu8VTxJBEYhwOjQpLT+RqTde+vamMUn681kHJyfeOjj5w5/P4D2UjU1JJyhOQRg/nXdbRxt3EXoJgfT69oaenLUsAlg64WmH2xx5rR+4Ag5jPmZ1lniO61a4zUb49tdynXkvJxqZTYrE0KSuQg3RgMxgiwQn2Wl881JpI56sYpt9yo075a5Sx761e7c/GWh+fVOTiAtYtujB/nSyb8ud7uqVFWPZyunPM6g21A6vfHXS7DqSUIPnqVDTMJCMOLtCQcd7644fIU+99TCpKdohDbK0OdWV9RaHkOtNuPB0CQG4ic6kjY5wvRCZQFO2pPVC8SEFUocOAKBpCLlIhPBzsYQzSJ5vbuvnAo4GX6n5tNll2QWKiN2ciDSR2ZLqWByZQksOLJDcbCtUJB16v9VPK5T04UltotPRjSGEfeRYyLxDUeylK6e7NpNI736D+84T8CKE="
                 )
         );
-        MOB_SKINS.put(EntityType.SQUID,
+        MOB_SKINS.put(XEntityType.SQUID.get(),
                 new CachedSkin(
                         "squid",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NjEyNDcsInByb2ZpbGVJZCI6IjcyZTY0NjgzZTMxMzRjMzZhNDA4YzY2YjY0ZTk0YWY1IiwicHJvZmlsZU5hbWUiOiJNSEZfU3F1aWQiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzAxNDMzYmUyNDIzNjZhZjEyNmRhNDM0Yjg3MzVkZjFlYjViM2NiMmNlZGUzOTE0NTk3NGU5YzQ4MzYwN2JhYyJ9fX0=",
                         "xYGyUUZuPtG/BJooEL0kGfFtVlZWCrQ9NHtlMIfX4k7gq5MkhtdGl7DLo+CB9BgufwCuC+3DUih7xOuroNtAZesPZ5dF6BlAZXSohr7wiQE3o9sB8oHgVc5lAagjs/ef6xc8yRzLLB7Et6YUtWkIpie2i4na+CA1S4y6FAqmiJ7tgHXpoVBagI5XGc/fvV7RHKBG4v1P3bStEcGmzIZWZA0LM0azsb4jRwno0r+Pn8UIuCOEU5VZFZGIk5DtcAsDKRi5m2WwHHD/n+gpw50z/BtgXcjnJcqdAYezr7wbXti7ydJEx0mq/gqMttZzQAWgmoVg6GcbdhWAklilKtHPIlz6KHuYreXEciugAdfEdmSoT5QwXdAyBd1ftNluhe+tNEZPHAtyaCubpQwcHdvkCl+WWc8mE0W20+1XD2dHCpFdiJm7ZsW+WtdcwEnjyiq+eS2BppP+prgRE/15rQm7JjPGSlDhLvjtbicraCH1EedcObhaqs9vOd8dNMPP+ptw0D8FTcQiff49r677MciHc+WlZPssS71dGUx1qsq0+JnZ8qJPMbWCSgQTT1aFjxQSwZbTOwSdXN+hps/rFSnQ+K44kkGnXJNWRgf7dKIYnmGXI4a95naqhvVBPxLSW4EWbSnU7tfR8mJJpn+iEI39j2tOtA9UNz88HaqCSyioY+o="
                 )
         );
-        MOB_SKINS.put(EntityType.VILLAGER,
+        MOB_SKINS.put(XEntityType.VILLAGER.get(),
                 new CachedSkin(
                         "villager",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NjY2MDgsInByb2ZpbGVJZCI6ImJkNDgyNzM5NzY3YzQ1ZGNhMWY4YzMzYzQwNTMwOTUyIiwicHJvZmlsZU5hbWUiOiJNSEZfVmlsbGFnZXIiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzgyMmQ4ZTc1MWM4ZjJmZDRjODk0MmM0NGJkYjJmNWNhNGQ4YWU4ZTU3NWVkM2ViMzRjMThhODZlOTNiIn19fQ==",
                         "jk3tLB8b0dVjR8qdMkXAeVAgdPDMHmhiDcvDzpF55vQehvuVl2f+r8Mgqm/EyNtVzxH78rXiJjRbxdmh58kNRoLXY35+rBTUhZgiUAh5JTWEbUOHA7k8ZqF16+uRqiCgAXGX5ZzC49Lspye8CSrEhqXfQhiWDgmX1xkpaKRDRpsdciMKG9m6rmowPbYPf+QF/RuMHi5zY+4xvjMCFY3KKaHE37l+J6MPnrF9c5/o3/hWpCe+kUJ1vJ5z5Lz45jDUsVEtydVAzrdWW1lxlYxM3JZ2+aqNcMBA5cWts70ujxZ4bWgwgpaEeRCi0j9jjjigazCfu6GhueD4HfBvPzBcXFq4rzPumPm5je2CBvhSmwnTw/Hb9OsF5FWexNB3VvS1gJ4lNDtCkV9Fyz5Gs5tLUVatH2PVvrIW7Zm7TwU1SYeahPJCiCyURteH52IEDko3wQRQxOkrqJI8vn3ppzEmEGkcU7McDCuf7Ttsv2DlRHxO9nJVSqud8/lSinum8cndMJ4/ABO5Wq6T2aucf9zQ45ZcFJId8fEYeIoZ1nFXL8EhwUJS+s6y/ORb8HWqHZ5uR0New2A/saAv4mxVsz5z3d/MvXGm7LG6Ww2W/I0JW3Vj7RBoximz8ZMXEOIi9YJ8tX853IZUdjjyyCNlXiK5YUP4+5LAi8sHi9htX6xAZXo="
                 )
         );
-        MOB_SKINS.put(EntityType.SLIME,
+        MOB_SKINS.put(XEntityType.SLIME.get(),
                 new CachedSkin(
                         "slime",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NzE5NzYsInByb2ZpbGVJZCI6Ijg3MGFiYTkzNDBlODQ4YjM4OWM1MzJlY2UwMGQ2NjMwIiwicHJvZmlsZU5hbWUiOiJNSEZfU2xpbWUiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzE2YWQyMGZjMmQ1NzliZTI1MGQzZGI2NTljODMyZGEyYjQ3OGE3M2E2OThiN2VhMTBkMThjOTE2MmU0ZDliNSJ9fX0=",
                         "LQG9d8Ki2nDIOwj7AmpgM7pbTI9XRBpThvqnCnxW5Z6zgnGMtYBXkVoDkL0BRvImiZeY6SjSlTfR5uPtFpgc/+IRbzMhF0rn/BEpAVHIivCFKH4esYrsjJieAD2RV86AxaqZvA7WVG6opnmdjJKYrd8q8M0fI7QRXTQF5Ub03KTO2ajvBSgBHjKA60IdvvY2ulZAIDmvRe461yJ2EmHXKboW/hEyVU2+59O9R+/1aiv1LnfepP3/w0+vUAVptSkB6+Hg7aJdrFFQqIm4JlKtUyhFVjl5vjNjAdNp1mL6ZusYryHId6aarQxa1/8PeBGLEv2ntp9YAjXmvYLGEiz+6Rq4OC/51i9uEhIA8X3CnT2bmaupEGeQykQx9iCyypcGJzzQOvOiw6fCjIp4UxsmS17Dd3Xec578MjEvB5IzAPT8/OM+yDrXN6ediw0wAz++KECT9TZRZba4/wL17+HAVtELTfacTEmDOWYXZvvdGStbNab+VOK/okuNk1PPWIcq3KgryGvMeOZkj2xhrDpkhFXy4H/doBgR3kK2QwrxEyox9L7GclgACHjPFOj76GRJlS/IhT5xfGZ/++tZnEzeeG/dKoYGA5ll6RGJafkbqZlYPAGfPFfQ1leQyFOua4jOxDzCH/FO9ftR9yKEdOQeztTj8whv3Mn9hcX8w/C5v48="
                 )
         );
-        MOB_SKINS.put(EntityType.MAGMA_CUBE,
+        MOB_SKINS.put(XEntityType.MAGMA_CUBE.get(),
                 new CachedSkin(
                         "magma_cube",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1NzczMzcsInByb2ZpbGVJZCI6IjA5NzJiZGQxNGI4NjQ5ZmI5ZWNjYTM1M2Y4NDkxYTUxIiwicHJvZmlsZU5hbWUiOiJNSEZfTGF2YVNsaW1lIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8zODk1N2Q1MDIzYzkzN2M0YzQxYWEyNDEyZDQzNDEwYmRhMjNjZjc5YTlmNmFiMzZiNzZmZWYyZDdjNDI5In19fQ==",
                         "Eg/5pglZg3aluXEzzdNOx8eg7A8dS7eZb7WfEtutHK4qG42WLB45nMq5ZsoZmFhWT4+aXcN8EFlDh36RGWCFYAWtP7Ct4HrDRANGfuFB8XzShX/bCGquLewRCeFbvvxdi9TnOh07xBOup1DgBVYr2ACHQ2SMH470JTYyvX7jO54LG2h0T6hmAnDeloOgFcXr3l3qxxo1vRP3nrsUYLkbMA5CdzJgQHxg+5yZMrLCtyIsA8A70WQPVaEWbF4fjocP2WmQZT9U9yZYA6NDr6e2uKDU+rp4rEeWCCt7cEbLPODT/QtLpoJMo3vFxGYQ0LCjF57oQRKZBpANDWNajfmk1aY2yjM1JA/bWK9DjuilvbgHcsW2ekEsvi1liztELT8TuToO8+wuz6McV7QQrWL8LPspQFkpTJ7aevbBR2zxQTg3R4HMRkMT3H71YdEbtUuc9zLS5jsc9/BiWoGVtRHo4v2Yu2s2vvN2PRSiYbnykxIDaa6Z8SPB/ezMgrTligwekHKUI9spxARZ3QQyewTEH55dni8/2OYHGqeXQ6ibYIT/e1eETAMIUjEJ81bu9/D8MzLqn+wodZ+kjnDsDRCb+zNMP1FZLqN9jYlsbuEX/ghQI8RZ7Tws7TMcKGXbKabww77lnfo8KhKaZnz0SlPFmnnQG2fDNZJB2ktsgpVBfvs="
                 )
         );
-        MOB_SKINS.put(EntityType.CREEPER,
+        MOB_SKINS.put(XEntityType.CREEPER.get(),
                 new CachedSkin(
                         "creeper",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1ODI2OTgsInByb2ZpbGVJZCI6IjA1N2IxYzQ3MTMyMTQ4NjNhNmZlODg4N2Y5ZWMyNjVmIiwicHJvZmlsZU5hbWUiOiJNSEZfQ3JlZXBlciIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjk1ZWY4MzYzODlhZjk5MzE1OGFiYTI3ZmYzN2I2NTY3MTg1ZjdhNzIxY2E5MGZkZmViOTM3YTdjYjU3NDcifX19",
                         "SEmNuwrYq1BVE35AMiFtRvnrWSs3dvmFHa7HZS3wXfHM5Xi5Jv/1Dkjah5jIxATbkuTEYCiNmRuns/pzCOPVcB9mTEFkXnc30+/1UWhJ+l0xVM2X8u9iTBWDalRJVV7t8M2LekyH/v8g+pREjZvJoKD5rb0VVDAIbMr0S7EycPlns0tCwvuu4rlfr7cHAbycDSc87kcawJNhDM2fr2Od/3zBAjKlk1xmLcD7P087buqArJnSsLcn3v2HAccDgCJ9vdr0MpFeT9mvw34daVxv8JVtOYkf49fKKNOaC0gTRj1upLSINmhx5zP3EQGQk3/RvJSHxcBBbIvvat1e84+tNpP7z2PNmYvFBRgM+ovgKu4vLImFPBdNgcyANjOecBZZwVFkq1Lo5sz7upxAhuV1dS/hb/n7gDDYZDvKdvxqQpYYziSVJ5qjveoF7YSxSvteIP96H4xFaDc2DlGzEHT/pNCjSmgRGfw77/NgCwwiCHL23/STsY5OrT/VPbeY2jl4mPESs6nFwT4/yGkPI0qSG9K66zteMfwyAbbOY+ueuT8SZlM4AHBp4SWrx2gWKniq7ti/EczAkE8CJc3Pgoj5GCYkl+iZqtYclIMNk0otpyJ9tFF1Q9g6qubq9JRDPzOEZxYVSqJCRIRsaf2yBMKPh6vCso0kNSugunuyf+lCMDA="
                 )
         );
-        MOB_SKINS.put(EntityType.ZOMBIE,
+        MOB_SKINS.put(XEntityType.ZOMBIE.get(),
                 new CachedSkin(
                         "zombie",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1ODgwODEsInByb2ZpbGVJZCI6ImRhY2EyYzNkNzE5YjQxZjViNjI0ZTQwMzllNmMwNGJkIiwicHJvZmlsZU5hbWUiOiJNSEZfWm9tYmllIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81NmZjODU0YmI4NGNmNGI3Njk3Mjk3OTczZTAyYjc5YmMxMDY5ODQ2MGI1MWE2MzljNjBlNWU0MTc3MzRlMTEifX19",
                         "OR1BY4LqqVpI2AnM4IePAG677M8DkVAeiknMqqrb8q0KYCAon6ylP5Zn78AJQZOzNi3Y/tPvdj/NS5vexfr9FuAwo2CPd49O1DFVgtljt/hNM/40hBk3tE/ZlNvbZpMwGWmwQdbhxZf+9wrlJpkaMPsT3y8ifbehv9C2RMlaaLQBjedMT5B8yDTT/pZwWqNZ4iPtUeDiI8VsvcMyawkjnD5kQsxB6GCrCx9vAPFRtsw5r4YAhIzPpFdrGnKXRmEuR//POE8KFlL72iMhoR7pmcglhYAUlSAfL4Y6Y9SKYP91BV54Oh0DuBybr7ifb3Bu1zN37xPYih88H6nyPuVwsfQ2f8YUHQvRMRHi3iLwUut5TIVf7FOQOdMbcZWNk9SaR0E2ha8+T1EDW2X4+DEEk6CsLPSHTx/jtR89AcZxvayqOu77oP5V+seBThcXlkzk2bo1H3AdGz6ynQVeQoSnjzChwYhNs7roJAzQ+C0ipMr+1ezT6rdX39vtOIcHsF4EX6mqR6Tob84lUeDjiHiBVAUeralRY6I5Rl7vsTk8GFkQ7rAFj0OG1XKIKH2EAW10EtePdI6wH4DNbc4py4VL5o0lh9EPFpr8AC3lHSzaKELrlp3GcOhhA5NhWrotW8xxXssnH8mpbw8KWe6evI3Us7Ng1qiwwHCC0Yc7n9MgZL0="
                 )
         );
-        MOB_SKINS.put(EntityType.SKELETON,
+        MOB_SKINS.put(XEntityType.SKELETON.get(),
                 new CachedSkin(
                         "skeleton",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1OTM0NzIsInByb2ZpbGVJZCI6ImEzZjQyN2E4MThjNTQ5YzVhNGZiNjRjNmUwZTFlMGE4IiwicHJvZmlsZU5hbWUiOiJNSEZfU2tlbGV0b24iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzJlNWJlNmEzYzAxNTlkMmMxZjNiMWU0ZTFkODM4NGI2ZjdlYmFjOTkzZDU4YjEwYjlmODk4OWM3OGEyMzIifX19",
                         "Bp35CW338fS5VEHtpHE+ZQH0Jq4z4m2F9ReQ+HdpLL9PHVusaD4Orud9se3+HJTTeDCRSRdc1N8oTcRdA5/xdl2CrjjUcIxa8Sfg+ySJd02xut3t1p5qxFe+w2zRytLBAQzcB8zO2QXf+niPhddESAC1sZ5Ds7/9CXXV2kSVvk+h2Mry0PR5inxPVqppDOTyFgTWivk4GVGnjJ3DOpnLAiTx5eafx42NPaQFRSj2Ho+9JejBgNtJpb8pGSGByyLVWnnVZhmm1A7SVzI2Vf2YUgEN0LautHCy/HyOFCS3/y/oy5+HNb0TPLVBlYl3I/Di1xZfYVScmTrJM6QPgW+tR5v/p+EH7eHdo/OGLwKjKlsmbX+BO6UHVofVEdiQDtOhBzBplitJj77UCQW+gXsFVLN38hrIRjR3v9cNKbr9XAZ88dU70FrwatvKEbfIETUmrW5ZyS/AHJrL4QTipmpw/j/usFNvhV3+N+Q1Iq7gB+ZNWCTdYCjBg0M/0jlwXyqkpb6UN/GQHH2q0VppmGZixrarCnolD/NcwU78np157hU5OZkhjFqCaB3CDc0FjsT4gXhQL03DhhSJwnAFkel0VxZjD3VShx+WDa0wHw5lTq++WDmJuvZep5sV38bTws9l9Zl5rqX80qydYup8v0byk/gt3FhoQ9Bqkcp84G3RNxA="
                 )
         );
-        MOB_SKINS.put(EntityType.SKELETON,
+        MOB_SKINS.put(XEntityType.SKELETON.get(),
                 new CachedSkin(
                         "skeleton",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI1OTg4MDcsInByb2ZpbGVJZCI6IjdlZDU3MWE1OWZiODQxNmM4YjlkZmIyZjQ0NmFiNWIyIiwicHJvZmlsZU5hbWUiOiJNSEZfV1NrZWxldG9uIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8yMzNiNDFmYTc5Y2Q1M2EyMzBlMmRiOTQyODYzODQzMTgzYTcwNDA0NTMzYmJjMDFmYWI3NDQ3NjliY2IifX19",
                         "ot6zQO97qCDOSIPUhmtdnoQfT0aVWi9BESmu8/P/EtnuyCfyugDPMzSAbmmsc9Ae+fnBHnmz2YUZ5JAmI7d+6PFuiZYhoc8bYdOLbnO5Cr9j3WGSmq2hb0cvhhr4okktCbNKmEl3F2ZBgtIDebkykoRTj72vlqevmjIi98wxEbbgNk9W0ikJcGeoV2Ksi0MErz9q5xjr+kWuq+b8qeyyAKv6wNqwZtE94rXX5UoBvrRS4NVMjpyFTUnV6Fq9s2eHXpa8Jx9sqfkc9btVpEwVy/w1CUXCdqWpoOe1sPPcUiniu95woX2ODVsfAk1wgxTiLzpYEdir3iMPzBZLFrPY+7XrN06droZ6vGSrOTtXIew7j8MrJfrob2GBsEskDZ4oegfwuqn8d9pGlEe1WOLSaXwRzryQx15sQQqC/LhZETFF4hJyZ8AlbircEqxDEEst0K8HAWiT0cIQLKwiJxzpn8L4CPaxGpBt3CrmpFhRAiTZJNs+deFHqrQ+75uNZoAnKyvwN7eMSvfDDYY9mQLI9AERAeHw3cAA3hoTe352Q9MTrzdecwBnZZgA5ZbO3ICacKloxZpmrC4MKS5jRKY0Th6m5vbCtoUXZdmeoL3ndlFLodyrmASGTyKsZ1ntR99MsxXjhRTuO/6ZT3Bu6m6ZVjnBKP/86UFkKc2owyIFbxc="
                 )
         );
-        MOB_SKINS.put(EntityType.WITHER,
+        MOB_SKINS.put(XEntityType.WITHER.get(),
                 new CachedSkin(
                         "wither",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI2MDQxODMsInByb2ZpbGVJZCI6IjM5YWY2ODQ0NjgwOTRkMmY4YmE0N2U5MmQwODdiZTE4IiwicHJvZmlsZU5hbWUiOiJNSEZfV2l0aGVyIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jZGY3NGUzMjNlZDQxNDM2OTY1ZjVjNTdkZGYyODE1ZDUzMzJmZTk5OWU2OGZiYjlkNmNmNWM4YmQ0MTM5ZiJ9fX0=",
                         "aHJTgEmMWxswmbj9YAwa7kpn9AhaJylKGNGsEJYDHNrxy29cNqfAHE56NABifOMvshIpqbYXA3JbgHbAM5asQe73EsrVTTUXRVnwICPmKQEv5sIY6jAKlL3+vB5NmxE+7GqrArn+d/olzLByIwt3Vk+lnNYmwy/mTvxQ+qTu3PUYea+7iyHdpMFoATyO8EQmAdDTuw32LrfP5Vam+f/lnkzbIqMAJ6nlNgYpRi1zhLR5mbiFWMchwsyTCwoH/0EX6s/h4+LUcOJ3Bb+HsiWz+fKYpi+Ky6FD87g7E3tFxB3SmZAncpPzNoWoEsD2fegqDnXjUkhSISF7bMjkxacjG03eWlPUj4JzZjqq/vtdNS7RT9USt+3PNaF8rKb6CxMeUV4dCeG4ybkLgoXpWNUr/9mzuurFOP+tOn5IXi3v6THXLFXHJgsiWkb7lJ9e/b+XjmDz2TmWA5g5RxVw8vXT4D2l6SPjBwT+CnqZKEAq6a4PT8KYePPXhhd+tM7zXvURpXHSItKza7m7VAJfyuZVX2zxLSwHrYVE0tIkzmvVQdvFJw4Z7Lvzz5CBokgaFsVavJuASYToLu1lXrTDxEQvPTYCnS/5qrtWUJjBD+4LJjnSWdB3CiBowZOUqKP3itbyxUfYGNRaR1bwScq1+zTaDKoM7n11zAzciXkMEDpQsXc="
                 )
         );
-        MOB_SKINS.put(EntityType.ENDERMAN,
+        MOB_SKINS.put(XEntityType.ENDERMAN.get(),
                 new CachedSkin(
                         "enderman",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI2MDk1NzAsInByb2ZpbGVJZCI6IjQwZmZiMzcyMTJmNjQ2NzhiM2YyMjE3NmJmNTZkZDRiIiwicHJvZmlsZU5hbWUiOiJNSEZfRW5kZXJtYW4iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzdhNTliYjBhN2EzMjk2NWIzZDkwZDhlYWZhODk5ZDE4MzVmNDI0NTA5ZWFkZDRlNmI3MDlhZGE1MGI5Y2YifX19",
                         "K3BjrmWkdzFkzd/1Ifux5NC9Qk36IEP9LlR/B6hs6tweyV0teY7BYC8WfcUYBMG7H7TrPVuTQrvsUsqsI4S4ZJPXWJLE0hbhKjUP/V1OE4pAV7Np7m1lvULeThxJzlJbPO8vRmJ6nQP2QqI2cJa/Lf4CaKQmFaGegZevX9aEY6eBVKfVOUkxscGNi6Pa5Gfc6IoWxRuCpIYoVu7jXTxx2NPjYxziDzi0+GdZDTZfbtIyKAd3dujCR409e4CECPrGh+3SWB1kEayp1WdDDWta/wWzTs/hNgYWYWrS+wuTT2IRkwK4eJk5c1qp6/vUREOqN5P2lyFuLgLa31UMnaLxh7uHyFned6IA4w9ZJlH36X7+MrPXb1RXUJc7YgCLE9RtaJVh5LiHNj3pBp72U1icFN1FfMqpaxM/WtuuU4k1iJzxr7F0Pbi8rrjqCBlyzxVqpQGRxAeO591gmL3Mmx8Jy/DsadzSNsWavxH09y2LAQZR/86tMu+HOGKFtBttuhjk1dAg5eJmjxX/NSJNVSNgW9lhR2oTd5r+R20fYAHnMm4DPKus9fR5K9qYcCUsvNK6rJJULj3TRJ0/muEaTajxGidTOKBa9oe/aVznQ9M8a8qnHbH/ewZDQDVBYAeyk1I70iQl4hIEoXhMDafk7NP0k7L4Tb8GE9KG5EL6MsjZP3s="
                 ));
-        MOB_SKINS.put(EntityType.IRON_GOLEM,
+        MOB_SKINS.put(XEntityType.IRON_GOLEM.get(),
                 new CachedSkin(
                         "iron_golem",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI2MTQ5MjYsInByb2ZpbGVJZCI6Ijc1N2Y5MGIyMjM0NDRiOGQ4ZGFjODI0MjMyZTJjZWNlIiwicHJvZmlsZU5hbWUiOiJNSEZfR29sZW0iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzg5MDkxZDc5ZWEwZjU5ZWY3ZWY5NGQ3YmJhNmU1ZjE3ZjJmN2Q0NTcyYzQ0ZjkwZjc2YzQ4MTlhNzE0In19fQ==",
                         "Smgrh2iBssFVnQKHSQojBUyg6QM7/8Z4c2J2s6SmlZ1Yvt7byBdMGXqfYZWRvpKGI1wCaG3oiOVOTdh/pZDyqSGD2QpUI3+A3I8uUxUUVgB+92WA8zKaMQ/QKrCuJ540TIJsXVwnwEDwEDiKrPhvIfgaBim9GmJIq4ecUK+Auov2BN4HDQOFfb8YrM204kJSnKrCez5bI4xEprv1n09y0cnJJmb5JHZ9ny083KLcosQD3BqAgGX78viC94rVZjRCKICnfC6j7KumKro/gYPo2fHpc2UeeKGz6Z9Mva6niPP7guQ54LzsBkG/AVEAHyQgHoUgbvDYoFW7K003rTmOjpKl8eytO74dKlT5BWDQU93V6z9S5IPi6SDg7lR4ZdpoCEjhT3Dw75YpJK9XVgMsQfmrURotXXIOo+1XX0VeMeNpXyQAPNbiaCBYM9Q8zX6clZ73JpeqNJg5QrGT95t4u6ImshSS0L/OgaeBYM731oAS3Qk5o8EcRGeuKx0DsoLmjqwSrcPpZZ5w99wa86s6tCWRVc78OHSP976pIpUxTNxO7UAc7NKDf0DP3Z7GhAbqjJDx3csinMmb8iXKlk4ESAcAwzsd+9YGiZ9EOInhqh2DuaPbleXWaF0kQOhm914mihRooeSLoq/mXlH8H2KjTUR8QOLle+ckBp+tqKfoF4I="
                 )
         );
-        MOB_SKINS.put(EntityType.BLAZE,
+        MOB_SKINS.put(XEntityType.BLAZE.get(),
                 new CachedSkin(
                         "blaze",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI2MjAyOTYsInByb2ZpbGVJZCI6IjRjMzhlZDExNTk2YTRmZDRhYjFkMjZmMzg2YzFjYmFjIiwicHJvZmlsZU5hbWUiOiJNSEZfQmxhemUiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2I3OGVmMmU0Y2YyYzQxYTJkMTRiZmRlOWNhZmYxMDIxOWY1YjFiZjViMzVhNDllYjUxYzY0Njc4ODJjYjVmMCJ9fX0=",
                         "RnEzoI9dE9xwAKekixMf24vtTvhLgrjKG0kj0kRHb8qUL3EiEj37vT/Z3jjH0CZ+Hn48wI6ilXz/JSJaH+AmLEcPyiYd/2S/k4Hlk0QEt6E7wWIK36a6cLF+uKUQs/rFoSWRIYXyYX+oQ2TJvylzMWVsJGxq8u3JbjmK6rMLkyzs9ZdXr2CCEMEBLNYZdTfKUyT7EDUAfT61RftLidINHAawCXDZ2+K2Hc7VHTbmbLCHqZ8XWyv6tUY2sA2qfm2W2NbyAtd7/fcThIIhv2yabGs1vU8JDUrwA/fX7PK9iKPu05BSPrHNwSkqcUFXxkt88K6nOeDAnFYb9jzoU1vm6kXX0n8/yrRxJ3npjOs/YQmR7Ed1fBvT/og/tvcD2DiuyptN4w4fzwzQeqenrnIHt7Na/1VI+3gd+5u1mv6tny4qg+BmFBHU3nGlKT5dmbRzpr7MKek2SkBmkw8K9r5cqHDSQeh6Pnc60gtuIsOKbHsmgFezRmqlI7d9vv4kqMAGMYqTub+/t8LOwSmjD8+pWfkhfCqB8tQ+wqaMqTQh91fFMW0+pdfNksIjvJLJ5ZMSaL2m4WuZoxf2ZskZzXYixLCp69tsh2yiPl3vn13onO+kiQGO0R6pc3YPmalPQjF6Qa2hvowLMpiqB2tzLbj8lfqNEZFBb1VOn8vImiZbJZI="
                 )
         );
-        MOB_SKINS.put(EntityType.GHAST,
+        MOB_SKINS.put(XEntityType.GHAST.get(),
                 new CachedSkin(
                         "ghast",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTI2MzExNTAsInByb2ZpbGVJZCI6IjA2MzA4NWE2Nzk3ZjQ3ODViZTFhMjFjZDc1ODBmNzUyIiwicHJvZmlsZU5hbWUiOiJNSEZfR2hhc3QiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzhiNmE3MjEzOGQ2OWZiYmQyZmVhM2ZhMjUxY2FiZDg3MTUyZTRmMWM5N2U1Zjk4NmJmNjg1NTcxZGIzY2MwIn19fQ==",
                         "Jna4wrXN45Ga9YwVOTb5M778l1PXRW+ILNk2EZZeVklW7qDj6uLflB6lrffqYhOxzC3igM5Ad9ug8A/Ngiz0hGy9oyXN5QVFaQTZEcqkNCyhYSjEHE2g41Q+/ign2y3knDQETRrRjeykpHUgj9YnYjR3jFg2i9QF9fWpFRoDlzpv4qkKtr08lbvFQqpztFMuJG9Yvs28AM3qka11pkwXIOWN+U8SGhaFTz4lzKTsnuon2YDvFE9/Db06OtBZlTst9Mh6qQb937v5gJ4ni13JHm9fKXW2q4USwSoDKc45bixjr75JUm10m7b9LKaVEFvqEwmwoLEPt+U8QDhSTNnzmata4YxoqVhvl+QX+rODkmvIT2sslYPHVCdCr2QMr/M43dRmFR9/PIhenMD/GYSPsZDnGUF8zI3A9Wj2kvUCUL9D2qmthQ7trIfvA74QSbfL5Z6uwiIztGSVtVBXxOxhhKPk59sfkU+8qk1Fgq5RysLKOnb4lWYUWv5A+jSNVbq6aiPPYQyzogMJUgc6IYq45klbgB6vlVvB6CvMFVtElEPcP+anMw5WRzK1MFmtE3rFwiGIXxeJ52RXUxylb1/MoG1Ix1kZbTDZ/QP8SqYnpeNukwwQdc5rfQ0N5qC3w3qurfmDk7rPPqyYNCEa7G8A+Hye6oUNlL5DPJ553UHJZck="
                 )
         );
-        MOB_SKINS.put(EntityType.SNOWMAN,
+        MOB_SKINS.put(XEntityType.SNOW_GOLEM.get(),
                 new CachedSkin(
                         "snowman",
                         "eyJ0aW1lc3RhbXAiOjE0NTU5OTQ1MzA2OTMsInByb2ZpbGVJZCI6IjUzZjE3NTM0NTBhOTQ1NjE4YWZhMjk4ODNiODRhMWNjIiwicHJvZmlsZU5hbWUiOiJTbm93bWFuXzciLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzhlOGQyMDZmNjFlNmRlOGE3OWQwY2IwYmNkOThhY2VkNDY0Y2JmZWZjOTIxYjQxNjBhMjUyODIxNjMxMTJhIn19fQ==",
