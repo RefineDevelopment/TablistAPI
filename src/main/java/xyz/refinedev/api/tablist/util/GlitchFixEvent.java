@@ -20,13 +20,17 @@ import org.bukkit.event.HandlerList;
  */
 
 @Getter
-@RequiredArgsConstructor
 public class GlitchFixEvent extends Event implements Cancellable {
+
+    private static final HandlerList handlers = new HandlerList();
 
     private final Player player;
     private boolean cancelled;
 
-    private static final HandlerList handlers = new HandlerList();
+    public GlitchFixEvent(Player player) {
+        super(true);
+        this.player = player;
+    }
 
     public static HandlerList getHandlerList() {
         return handlers;

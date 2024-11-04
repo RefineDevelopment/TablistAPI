@@ -124,7 +124,7 @@ public class TeamsPacketListener extends PacketListenerAbstract {
 
         GlitchFixEvent glitchFixEvent = new GlitchFixEvent(player);
         if (TablistHandler.getInstance().getPlugin().isEnabled()) {
-            Bukkit.getScheduler().runTask(TablistHandler.getInstance().getPlugin(), () -> Bukkit.getPluginManager().callEvent(glitchFixEvent));
+            Bukkit.getPluginManager().callEvent(glitchFixEvent);
         }
     }
 }
