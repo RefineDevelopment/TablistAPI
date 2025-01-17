@@ -1,8 +1,0 @@
-name: TablistAPI
-main: xyz.refinedev.api.tablist.TablistPlugin
-version: 1.0
-api-version: 1.13
-softdepend:
-  - ViaVersion
-  - ProtocolLib
-  - ViaRewind

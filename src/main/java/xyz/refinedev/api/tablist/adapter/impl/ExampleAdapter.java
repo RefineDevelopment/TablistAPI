@@ -1,6 +1,5 @@
 package xyz.refinedev.api.tablist.adapter.impl;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.entity.Player;
 import xyz.refinedev.api.skin.CachedSkin;
 import xyz.refinedev.api.tablist.adapter.TabAdapter;
@@ -8,6 +7,7 @@ import xyz.refinedev.api.tablist.setup.TabEntry;
 import xyz.refinedev.api.tablist.util.Skin;
 import xyz.refinedev.api.tablist.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,7 +51,7 @@ public class ExampleAdapter implements TabAdapter {
      */
     @Override
     public List<TabEntry> getLines(Player player) {
-        List<TabEntry> entries = new ObjectArrayList<>();
+        List<TabEntry> entries = new ArrayList<>();
 
         for ( int i = 0; i < 4; i++ ) {
             int ping = StringUtils.MINOR_VERSION > 12 ? player.getPing() : 69;

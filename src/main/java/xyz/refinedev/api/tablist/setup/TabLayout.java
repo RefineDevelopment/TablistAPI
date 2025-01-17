@@ -39,7 +39,7 @@ public class TabLayout {
 
     public static String[] TAB_NAMES = new String[80];
 
-    private final Map<Integer, TabEntryInfo> entryMapping = new Int2ObjectArrayMap<>();
+    private final Map<Integer, TabEntryInfo> entryMapping = new HashMap<>();
 
     /**
      * {@link Integer Mod} is the modification integer
